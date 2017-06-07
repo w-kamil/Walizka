@@ -4,20 +4,20 @@ package com.github.w_kamil.walizka.dao;
 public class SinglePackingListItem {
 
     private int id;
-    private String description;
+    private String itemName;
     private boolean isPacked;
     private final int listId;
 
 
-    public SinglePackingListItem(String description, boolean isPacked, int listId) {
-        this.description = description;
+    public SinglePackingListItem(String itemName, boolean isPacked, int listId) {
+        this.itemName = itemName;
         this.isPacked = isPacked;
         this.listId = listId;
     }
 
-    public SinglePackingListItem(int id, String description, boolean isPacked, int listId) {
+    public SinglePackingListItem(int id, String itemName, boolean isPacked, int listId) {
         this.id = id;
-        this.description = description;
+        this.itemName = itemName;
         this.isPacked = isPacked;
         this.listId = listId;
     }
@@ -26,8 +26,8 @@ public class SinglePackingListItem {
         return id;
     }
 
-    public String getDescription() {
-        return description;
+    public String getItemName() {
+        return itemName;
     }
 
     public boolean isPacked() {
@@ -38,8 +38,8 @@ public class SinglePackingListItem {
         return listId;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
     public void setPacked(boolean packed) {
