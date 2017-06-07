@@ -43,7 +43,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.MyVieH
             onListItemClickListener.OnListItemClick(v, position);
         });
         holder.imageView.setOnClickListener(v -> {
-            onEraseClickListener.OnEraseClick(v, position);
+            onEraseClickListener.onEraseClick(v, position);
         });
     }
 

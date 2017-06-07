@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements OnEraseClickListe
     }
 
     @Override
-    public void OnEraseClick(View v, int position) {
+    public void onEraseClick(View v, int position) {
         AlertDialog deleteListDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.confirmation)
                 .setPositiveButton(R.string.confirm, (dialog, which) -> {

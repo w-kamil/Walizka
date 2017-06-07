@@ -24,7 +24,7 @@ public class PackingListDao implements IPackingListDao {
     public List<SinglePackingListItem> fetchAllItemsInList(PackingList packingList) {
         database = dbHelper.getReadableDatabase();
         cursor = new DbContentProvider().query(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.COLUMNS_NAMES_ITEMS,
-                null, null);
+                PackingListDbContract.PackingListEntry.COL_LIST_ID + " = ?", new String[]{String.valueOf(packingList.getId())});
         List<SinglePackingListItem> itemsList = new ArrayList<>();
         while (cursor.moveToNext()) {
             int indexId = cursor.getColumnIndex(PackingListDbContract.PackingListEntry._ID);

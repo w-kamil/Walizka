@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.github.w_kamil.walizka.R;
@@ -16,9 +17,14 @@ import java.util.List;
 public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.MyViewHolder> {
 
     private List<SinglePackingListItem> list;
+    private OnCheckBoxChangedListener onCheckBoxChangedListener;
 
     public PackingListAdapter(List<SinglePackingListItem> list) {
         this.list = list;
+    }
+
+    public void setOnCheckBoxChangedListener(OnCheckBoxChangedListener onCheckBoxChangedListener) {
+        this.onCheckBoxChangedListener = onCheckBoxChangedListener;
     }
 
     @Override
@@ -31,6 +37,13 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
     public void onBindViewHolder(PackingListAdapter.MyViewHolder holder, int position) {
         holder.name.setText(list.get(position).getItemName());
         holder.checkBox.setChecked(list.get(position).isPacked());
+        boolean isChecked = holder.checkBox.isChecked();
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                onCheckBoxChangedListener.onCheckBoxClick(buttonView, position, isChecked);
+            }
+        });
     }
 
     @Override

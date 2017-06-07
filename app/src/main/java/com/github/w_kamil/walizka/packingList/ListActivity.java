@@ -16,24 +16,28 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.github.w_kamil.walizka.MainListAdapter;
 import com.github.w_kamil.walizka.R;
 import com.github.w_kamil.walizka.dao.PackingList;
 import com.github.w_kamil.walizka.dao.PackingListDao;
 import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends AppCompatActivity implements OnCheckBoxChangedListener {
 
     public static final String PACKING_LIST = "packingList";
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     PackingListDao dao;
     PackingList packingList;
+    private ArrayList<SinglePackingListItem> list;
 
 
     @Override
@@ -85,17 +89,44 @@ public class ListActivity extends AppCompatActivity {
                             }
                     );
                 });
-                addNewListItemDialog.dismiss();
+                addNewListItemDialog.show();
                 return true;
+            case R.id.reset_packing_list:
+                AlertDialog deleteListDialog = new AlertDialog.Builder(this)
+                        .setTitle(R.string.confirmation)
+                        .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                            resetList();
+                            updateUI();
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .create();
+                deleteListDialog.show();
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void updateUI() {
+    private void resetList() {
+        for (SinglePackingListItem listItem : list) {
+            listItem.setPacked(false);
+            dao.updateIsItemPacked(listItem);
+        }
 
-        List<SinglePackingListItem> list = dao.fetchAllItemsInList(packingList);
+    }
+
+    private void updateUI() {
+        list = new ArrayList<>();
+        list.addAll(dao.fetchAllItemsInList(packingList));
+        Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
         PackingListAdapter adapter = new PackingListAdapter(list);
+        adapter.setOnCheckBoxChangedListener(this);
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onCheckBoxClick(View v, int position, boolean isChecked) {
+        list.get(position).setPacked(isChecked);
+        dao.updateIsItemPacked(list.get(position));
+        updateUI();
     }
 }
