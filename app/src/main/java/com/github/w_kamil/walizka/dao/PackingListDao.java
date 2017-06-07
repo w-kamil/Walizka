@@ -106,9 +106,9 @@ public class PackingListDao implements IPackingListDao {
     public int removeExistingPackingList(PackingList packingList) {
         database = dbHelper.getWritableDatabase();
         //jak połączyć w jedno wyrażenie usunięcie listy z listy głównej z usunięciem wszystkich jej składników na liście głównej?
-        new DbContentProvider().delete(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.PackingListEntry.COL_LIST_ID,
+        new DbContentProvider().delete(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.PackingListEntry.COL_LIST_ID + " = ?",
                 new String[]{String.valueOf(packingList.getId())});
-        int deletedRows = new DbContentProvider().delete(PackingListDbContract.ListOfLists.TABLE, PackingListDbContract.ListOfLists._ID,
+        int deletedRows = new DbContentProvider().delete(PackingListDbContract.ListOfLists.TABLE, PackingListDbContract.ListOfLists._ID + " = ?",
                 new String[]{String.valueOf(packingList.getId())});
         return deletedRows;
     }

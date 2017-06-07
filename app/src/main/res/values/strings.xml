@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Walizka</string>
+    <string name="add_list">Stwórz nową listę</string>
+    <string name="enter_name">Podaj nazwę</string>
+    <string name="adding_new_list">Dodawanie nowej listy</string>
+    <string name="confirm">Potwierdź</string>
+    <string name="cancel">Anuluj</string>
+    <string name="confirmation">Czy jesteś pewien?</string>
 </resources>
