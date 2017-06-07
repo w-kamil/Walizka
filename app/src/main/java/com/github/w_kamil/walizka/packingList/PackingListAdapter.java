@@ -1,12 +1,14 @@
 package com.github.w_kamil.walizka.packingList;
 
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.w_kamil.walizka.R;
@@ -37,13 +39,10 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
     public void onBindViewHolder(PackingListAdapter.MyViewHolder holder, int position) {
         holder.name.setText(list.get(position).getItemName());
         holder.checkBox.setChecked(list.get(position).isPacked());
-        boolean isChecked = holder.checkBox.isChecked();
-        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                onCheckBoxChangedListener.onCheckBoxClick(buttonView, position, isChecked);
-            }
-        });
+        if(holder.checkBox.isChecked()){
+            holder.singleItemLineraLayout.setBackgroundColor(Color.parseColor("#D7CCC8"));
+        }
+        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> onCheckBoxChangedListener.onCheckBoxClick(buttonView, position, isChecked));
     }
 
     @Override
@@ -55,11 +54,13 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
 
         TextView name;
         CheckBox checkBox;
+        LinearLayout singleItemLineraLayout;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.name_text_view);
             checkBox = (CheckBox) itemView.findViewById(R.id.checkbox);
+            singleItemLineraLayout = (LinearLayout) itemView.findViewById(R.id.single_item_linear_layout);
         }
     }
 
