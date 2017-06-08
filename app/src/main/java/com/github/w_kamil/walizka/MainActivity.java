@@ -1,6 +1,5 @@
 package com.github.w_kamil.walizka;
 
-import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,7 +23,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements OnEraseClickListener, OnListItemClickListener {
+public class MainActivity extends AppCompatActivity implements OnEraseClickListener, OnListItemClickListener, OnLongListNameClickListener {
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -82,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnEraseClickListe
         MainListAdapter adapter = new MainListAdapter(list);
         adapter.setOnListItemClickListener(this);
         adapter.setOnEraseClickListener(this);
+        adapter.setOnLongListNameClickListener(this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -102,5 +102,31 @@ public class MainActivity extends AppCompatActivity implements OnEraseClickListe
     @Override
     public void OnListItemClick(View v, int position) {
         startActivity(ListActivity.createIntent(this, list.get(position)));
+    }
+
+    @Override
+    public void OnLongListNameClick(View v, int position) {
+        LayoutInflater renameListInflater = getLayoutInflater();
+        View renameListLayout = renameListInflater.inflate(R.layout.dialog_rename, null);
+        AlertDialog renameListDialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.changing_list_name)
+                .setView(renameListLayout)
+                .setPositiveButton(R.string.confirm, null)
+                .setNegativeButton(R.string.cancel, null)
+                .create();
+        renameListDialog.setOnShowListener(dialog -> {
+            Button positiveButton = renameListDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            EditText newListNameEditText = (EditText) renameListDialog.findViewById(R.id.new_name_edit_text);
+            positiveButton.setOnClickListener(v1 -> {
+                if (newListNameEditText.getText().length() == 0) {
+                    Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
+                }else {
+                    dao.renameList(list.get(position), newListNameEditText.getText().toString());
+                    updateUI();
+                    renameListDialog.dismiss();
+                }
+            });
+        });
+        renameListDialog.show();
     }
 }

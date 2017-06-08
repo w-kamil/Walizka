@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,6 +20,7 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
     private List<SinglePackingListItem> list;
     private OnCheckBoxChangedListener onCheckBoxChangedListener;
     private  OnLongListItemClickListener onLongListItemClickListener;
+    private boolean longClickSelectionFlag;
 
     public PackingListAdapter(List<SinglePackingListItem> list) {
         this.list = list;
@@ -33,7 +33,6 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
     public void setOnLongListItemClickListener(OnLongListItemClickListener onLongListItemClickListener) {
         this.onLongListItemClickListener = onLongListItemClickListener;
     }
-
 
     @Override
     public PackingListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -50,8 +49,14 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         }
         holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> onCheckBoxChangedListener.onCheckBoxClick(buttonView, position, isChecked));
         holder.name.setOnLongClickListener(v -> {
-            onLongListItemClickListener.setSelectecListItem(list.get(position));
-            return onLongListItemClickListener.updateMenu();
+            if(!longClickSelectionFlag) {
+                holder.singleItemLineraLayout.setBackgroundColor(Color.parseColor("#CFD8DC"));
+                onLongListItemClickListener.setSelectecListItem(list.get(position));
+                longClickSelectionFlag = true;
+                return onLongListItemClickListener.updateMenu();
+            }else {
+                return false;
+            }
         });
     }
 
@@ -73,6 +78,4 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
             singleItemLineraLayout = (LinearLayout) itemView.findViewById(R.id.single_item_linear_layout);
         }
     }
-
-
 }

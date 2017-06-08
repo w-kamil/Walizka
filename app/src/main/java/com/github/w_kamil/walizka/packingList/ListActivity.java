@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,12 +32,14 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
     public static final String PACKING_LIST = "packingList";
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+
     PackingListDao dao;
     PackingList packingList;
     boolean optionalMenuViewFlag;
     Menu menu;
     private ArrayList<SinglePackingListItem> list;
     private SinglePackingListItem selectedListItem;
+    private PackingListAdapter adapter;
 
 
     @Override
@@ -50,6 +51,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                 LinearLayoutManager.VERTICAL));
         dao = new PackingListDao(this);
         packingList = getIntent().getExtras().getParcelable(PACKING_LIST);
+        setTitle(packingList.getListName());
         updateUI();
     }
 
@@ -95,7 +97,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                 addNewListItemDialog.show();
                 return true;
             case R.id.reset_packing_list:
-                AlertDialog deleteListDialog = new AlertDialog.Builder(this)
+                AlertDialog resetListDialog = new AlertDialog.Builder(this)
                         .setTitle(R.string.confirmation)
                         .setPositiveButton(R.string.confirm, (dialog, which) -> {
                             resetList();
@@ -103,7 +105,8 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                         })
                         .setNegativeButton(R.string.cancel, null)
                         .create();
-                deleteListDialog.show();
+                resetListDialog.show();
+                return true;
             case R.id.remove_list_item:
                 AlertDialog deleteItemDialog = new AlertDialog.Builder(this)
                         .setTitle(R.string.confirmation)
@@ -118,7 +121,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                 return true;
             case R.id.rename_list_item:
                 LayoutInflater renameDialogInflater = getLayoutInflater();
-                View renameDialogLayout = renameDialogInflater.inflate(R.layout.dialog_rename_list_item, null);
+                View renameDialogLayout = renameDialogInflater.inflate(R.layout.dialog_rename, null);
                 AlertDialog renameListItemDialog = new AlertDialog.Builder(this)
                         .setView(renameDialogLayout)
                         .setPositiveButton(R.string.confirm, null)
@@ -126,7 +129,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                         .create();
                 renameListItemDialog.setOnShowListener(dialog -> {
                     Button positiveButton = renameListItemDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                    final EditText newNameEditText = (EditText) renameDialogLayout.findViewById(R.id.new_item_name_edit_text);
+                    final EditText newNameEditText = (EditText) renameDialogLayout.findViewById(R.id.new_name_edit_text);
                     positiveButton.setOnClickListener(v -> {
                                 if (newNameEditText.getText().length() == 0) {
                                     Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
@@ -158,7 +161,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         list = new ArrayList<>();
         list.addAll(dao.fetchAllItemsInList(packingList));
         Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
-        PackingListAdapter adapter = new PackingListAdapter(list);
+        adapter = new PackingListAdapter(list);
         adapter.setOnCheckBoxChangedListener(this);
         adapter.setOnLongListItemClickListener(this);
         recyclerView.setAdapter(adapter);
@@ -166,6 +169,9 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
 
     @Override
     public void onCheckBoxClick(View v, int position, boolean isChecked) {
+        if (optionalMenuViewFlag) {
+            updateMenu();
+        }
         list.get(position).setPacked(isChecked);
         dao.updateIsItemPacked(list.get(position));
         updateUI();
@@ -187,5 +193,15 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
             optionalMenuViewFlag = false;
         }
         return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (optionalMenuViewFlag) {
+            updateMenu();
+            updateUI();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

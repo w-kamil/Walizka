@@ -17,6 +17,7 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.MyVieH
     private List<PackingList> list;
     private OnEraseClickListener onEraseClickListener;
     private OnListItemClickListener onListItemClickListener;
+    private OnLongListNameClickListener onLongListNameClickListener;
 
     public void setOnEraseClickListener(OnEraseClickListener onEraseClickListener) {
         this.onEraseClickListener = onEraseClickListener;
@@ -24,6 +25,10 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.MyVieH
 
     public void setOnListItemClickListener(OnListItemClickListener onListItemClickListener) {
         this.onListItemClickListener = onListItemClickListener;
+    }
+
+    public void setOnLongListNameClickListener(OnLongListNameClickListener onLongListNameClickListener) {
+        this.onLongListNameClickListener = onLongListNameClickListener;
     }
 
     public MainListAdapter(List<PackingList> list) {
@@ -41,6 +46,13 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.MyVieH
         holder.packageListName.setText(list.get(position).getListName());
         holder.packageListName.setOnClickListener(v -> {
             onListItemClickListener.OnListItemClick(v, position);
+        });
+        holder.packageListName.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                onLongListNameClickListener.OnLongListNameClick(v,position);
+                return false;
+            }
         });
         holder.imageView.setOnClickListener(v -> {
             onEraseClickListener.onEraseClick(v, position);

@@ -53,7 +53,6 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem> 
     @Override
     public int compareTo(@NonNull SinglePackingListItem o) {
         return (this.isPacked() == o.isPacked()) ? 0 : (o.isPacked() ? -1 : 1);
-
     }
 
     public static Comparator<SinglePackingListItem> singlePackingListItemComparator

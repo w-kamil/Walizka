@@ -114,6 +114,17 @@ public class PackingListDao implements IPackingListDao {
     }
 
     @Override
+    public int renameList(PackingList packingList, String newListName) {
+        database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PackingListDbContract.ListOfLists.COL_LIST_NAME, newListName);
+        int updatedRows =  new DbContentProvider().update(PackingListDbContract.ListOfLists.TABLE, contentValues,
+                PackingListDbContract.ListOfLists._ID + " = ?", new String[]{String.valueOf(packingList.getId())});
+        database.close();
+        return updatedRows;
+    }
+
+    @Override
     public int removeExistingPackingList(PackingList packingList) {
         database = dbHelper.getWritableDatabase();
         //jak połączyć w jedno wyrażenie usunięcie listy z listy głównej z usunięciem wszystkich jej składników na liście głównej?

@@ -12,5 +12,6 @@ public interface IPackingListDao {
     int removeItemFromList(SinglePackingListItem singlePackingListItem);
     List<PackingList> fetchAllLists();
     long addNewPackingList(String listName);
+    int renameList(PackingList packingList, String newListName);
     int removeExistingPackingList(PackingList packingList);
 }

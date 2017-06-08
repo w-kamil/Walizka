@@ -13,4 +13,5 @@
     <string name="edit">Edytuj</string>
     <string name="enter_new_name">Podaj nową nazwę</string>
     <string name="enter_here">Tu wpisz nazwę</string>
+    <string name="changing_list_name">Zmiana nazwy listy</string>
 </resources>
