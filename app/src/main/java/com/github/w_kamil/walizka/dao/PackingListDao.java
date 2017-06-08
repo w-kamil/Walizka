@@ -67,9 +67,20 @@ public class PackingListDao implements IPackingListDao {
     }
 
     @Override
+    public int renameListItem(SinglePackingListItem singlePackingListItem, String newName) {
+        database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PackingListDbContract.PackingListEntry.COL_ITEM_NAME, newName);
+        int updatedRows =  new DbContentProvider().update(PackingListDbContract.PackingListEntry.TABLE, contentValues,
+                PackingListDbContract.PackingListEntry._ID + " = ?", new String[]{String.valueOf(singlePackingListItem.getId())});
+        database.close();
+        return updatedRows;
+    }
+
+    @Override
     public int removeItemFromList(SinglePackingListItem singlePackingListItem) {
         database = dbHelper.getWritableDatabase();
-        int deletedRows = new DbContentProvider().delete(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.PackingListEntry._ID,
+        int deletedRows = new DbContentProvider().delete(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.PackingListEntry._ID + " = ?",
                 new String[]{String.valueOf(singlePackingListItem.getId())});
         return deletedRows;
     }

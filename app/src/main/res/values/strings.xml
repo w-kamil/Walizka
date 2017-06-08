@@ -7,4 +7,10 @@
     <string name="cancel">Anuluj</string>
     <string name="confirmation">Czy jesteś pewien?</string>
     <string name="adding_new_list_item">Dodawanie nowej pozycji listy</string>
+    <string name="add_new">Dodaj nowy</string>
+    <string name="clear">Wyczyść</string>
+    <string name="remove">Usuń</string>
+    <string name="edit">Edytuj</string>
+    <string name="enter_new_name">Podaj nową nazwę</string>
+    <string name="enter_here">Tu wpisz nazwę</string>
 </resources>

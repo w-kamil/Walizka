@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,22 +23,22 @@ import com.github.w_kamil.walizka.dao.PackingListDao;
 import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ListActivity extends AppCompatActivity implements OnCheckBoxChangedListener {
+public class ListActivity extends AppCompatActivity implements OnCheckBoxChangedListener, OnLongListItemClickListener {
 
     public static final String PACKING_LIST = "packingList";
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     PackingListDao dao;
     PackingList packingList;
+    boolean optionalMenuViewFlag;
+    Menu menu;
     private ArrayList<SinglePackingListItem> list;
+    private SinglePackingListItem selectedListItem;
 
 
     @Override
@@ -60,7 +61,9 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.list_activity_menu, menu);
+        optionalMenuViewFlag = false;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -101,6 +104,43 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                         .setNegativeButton(R.string.cancel, null)
                         .create();
                 deleteListDialog.show();
+            case R.id.remove_list_item:
+                AlertDialog deleteItemDialog = new AlertDialog.Builder(this)
+                        .setTitle(R.string.confirmation)
+                        .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                            dao.removeItemFromList(selectedListItem);
+                            updateUI();
+                            updateMenu();
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .create();
+                deleteItemDialog.show();
+                return true;
+            case R.id.rename_list_item:
+                LayoutInflater renameDialogInflater = getLayoutInflater();
+                View renameDialogLayout = renameDialogInflater.inflate(R.layout.dialog_rename_list_item, null);
+                AlertDialog renameListItemDialog = new AlertDialog.Builder(this)
+                        .setView(renameDialogLayout)
+                        .setPositiveButton(R.string.confirm, null)
+                        .setNegativeButton(R.string.cancel, null)
+                        .create();
+                renameListItemDialog.setOnShowListener(dialog -> {
+                    Button positiveButton = renameListItemDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    final EditText newNameEditText = (EditText) renameDialogLayout.findViewById(R.id.new_item_name_edit_text);
+                    positiveButton.setOnClickListener(v -> {
+                                if (newNameEditText.getText().length() == 0) {
+                                    Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    dao.renameListItem(selectedListItem, newNameEditText.getText().toString());
+                                    updateUI();
+                                    updateMenu();
+                                    renameListItemDialog.dismiss();
+                                }
+                            }
+                    );
+                });
+                renameListItemDialog.show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -120,6 +160,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
         PackingListAdapter adapter = new PackingListAdapter(list);
         adapter.setOnCheckBoxChangedListener(this);
+        adapter.setOnLongListItemClickListener(this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -128,5 +169,23 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         list.get(position).setPacked(isChecked);
         dao.updateIsItemPacked(list.get(position));
         updateUI();
+    }
+
+    @Override
+    public void setSelectecListItem(SinglePackingListItem singlePackingListItem) {
+        this.selectedListItem = singlePackingListItem;
+    }
+
+    @Override
+    public boolean updateMenu() {
+        menu.clear();
+        if (!optionalMenuViewFlag) {
+            getMenuInflater().inflate(R.menu.optional_list_activity_menu, menu);
+            optionalMenuViewFlag = true;
+        } else {
+            getMenuInflater().inflate(R.menu.list_activity_menu, menu);
+            optionalMenuViewFlag = false;
+        }
+        return false;
     }
 }

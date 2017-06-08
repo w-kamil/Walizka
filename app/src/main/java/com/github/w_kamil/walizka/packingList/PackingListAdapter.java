@@ -20,6 +20,7 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
 
     private List<SinglePackingListItem> list;
     private OnCheckBoxChangedListener onCheckBoxChangedListener;
+    private  OnLongListItemClickListener onLongListItemClickListener;
 
     public PackingListAdapter(List<SinglePackingListItem> list) {
         this.list = list;
@@ -28,6 +29,11 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
     public void setOnCheckBoxChangedListener(OnCheckBoxChangedListener onCheckBoxChangedListener) {
         this.onCheckBoxChangedListener = onCheckBoxChangedListener;
     }
+
+    public void setOnLongListItemClickListener(OnLongListItemClickListener onLongListItemClickListener) {
+        this.onLongListItemClickListener = onLongListItemClickListener;
+    }
+
 
     @Override
     public PackingListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -43,6 +49,10 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
             holder.singleItemLineraLayout.setBackgroundColor(Color.parseColor("#D7CCC8"));
         }
         holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> onCheckBoxChangedListener.onCheckBoxClick(buttonView, position, isChecked));
+        holder.name.setOnLongClickListener(v -> {
+            onLongListItemClickListener.setSelectecListItem(list.get(position));
+            return onLongListItemClickListener.updateMenu();
+        });
     }
 
     @Override
