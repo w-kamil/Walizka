@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.w_kamil.walizka.R;
@@ -130,6 +131,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                 renameListItemDialog.setOnShowListener(dialog -> {
                     Button positiveButton = renameListItemDialog.getButton(AlertDialog.BUTTON_POSITIVE);
                     final EditText newNameEditText = (EditText) renameDialogLayout.findViewById(R.id.new_name_edit_text);
+                    newNameEditText.setText(selectedListItem.getItemName());
                     positiveButton.setOnClickListener(v -> {
                                 if (newNameEditText.getText().length() == 0) {
                                     Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
