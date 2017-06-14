@@ -23,7 +23,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements OnEraseClickListener, OnListItemClickListener, OnLongListNameClickListener {
+public class MainActivity extends AppCompatActivity implements  OnListItemClickListener {
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -80,8 +80,6 @@ public class MainActivity extends AppCompatActivity implements OnEraseClickListe
         list = dao.fetchAllLists();
         MainListAdapter adapter = new MainListAdapter(list);
         adapter.setOnListItemClickListener(this);
-        adapter.setOnEraseClickListener(this);
-        adapter.setOnLongListNameClickListener(this);
         recyclerView.setAdapter(adapter);
     }
 

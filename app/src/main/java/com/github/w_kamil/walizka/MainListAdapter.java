@@ -15,20 +15,11 @@ import java.util.List;
 public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.MyVieHolder> {
 
     private List<PackingList> list;
-    private OnEraseClickListener onEraseClickListener;
-    private OnListItemClickListener onListItemClickListener;
-    private OnLongListNameClickListener onLongListNameClickListener;
+      private OnListItemClickListener onListItemClickListener;
 
-    public void setOnEraseClickListener(OnEraseClickListener onEraseClickListener) {
-        this.onEraseClickListener = onEraseClickListener;
-    }
 
     public void setOnListItemClickListener(OnListItemClickListener onListItemClickListener) {
         this.onListItemClickListener = onListItemClickListener;
-    }
-
-    public void setOnLongListNameClickListener(OnLongListNameClickListener onLongListNameClickListener) {
-        this.onLongListNameClickListener = onLongListNameClickListener;
     }
 
     public MainListAdapter(List<PackingList> list) {
@@ -50,12 +41,12 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.MyVieH
         holder.packageListName.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                onLongListNameClickListener.OnLongListNameClick(v,position);
+                onListItemClickListener.OnLongListNameClick(v,position);
                 return false;
             }
         });
         holder.imageView.setOnClickListener(v -> {
-            onEraseClickListener.onEraseClick(v, position);
+            onListItemClickListener.onEraseClick(v, position);
         });
     }
 
