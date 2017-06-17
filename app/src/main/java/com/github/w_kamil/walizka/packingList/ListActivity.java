@@ -29,7 +29,7 @@ import java.util.Collections;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ListActivity extends AppCompatActivity implements OnCheckBoxChangedListener, OnLongListItemClickListener {
+public class ListActivity extends AppCompatActivity implements OnCheckBoxChangedListener, OnLongListItemClickListener, OnCategoryImageClickListener {
 
     public static final String PACKING_LIST = "packingList";
     @BindView(R.id.recycler_view)
@@ -207,7 +207,12 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         adapter = new PackingListAdapter(list);
         adapter.setOnCheckBoxChangedListener(this);
         adapter.setOnLongListItemClickListener(this);
+        adapter.setOnCategoryImageClickListener(this);
         recyclerView.setAdapter(adapter);
     }
 
+    @Override
+    public void onCategoryImageClick(View v, int position) {
+
+    }
 }

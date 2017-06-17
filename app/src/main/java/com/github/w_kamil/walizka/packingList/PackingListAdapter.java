@@ -23,6 +23,7 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
     private List<SinglePackingListItem> list;
     private OnCheckBoxChangedListener onCheckBoxChangedListener;
     private OnLongListItemClickListener onLongListItemClickListener;
+    private OnCategoryImageClickListener onCategoryImageClickListener;
 
     private boolean longClickSelectionFlag;
 
@@ -38,6 +39,9 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         this.onLongListItemClickListener = onLongListItemClickListener;
     }
 
+    public void setOnCategoryImageClickListener(OnCategoryImageClickListener onCategoryImageClickListener) {
+        this.onCategoryImageClickListener = onCategoryImageClickListener;
+    }
 
 
     @Override
@@ -52,6 +56,7 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         holder.name.setText(list.get(position).getItemName());
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.name.setOnLongClickListener(null);
+        holder.itemImageView.setOnClickListener(null);
         holder.itemImageView.setImageResource(list.get(position).getItemCategory().getDrawingResource());
         holder.checkBox.setChecked(list.get(position).isPacked());
 
@@ -74,6 +79,9 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
             } else {
                 return false;
             }
+        });
+        holder.itemImageView.setOnClickListener(v -> {
+            
         });
     }
 
