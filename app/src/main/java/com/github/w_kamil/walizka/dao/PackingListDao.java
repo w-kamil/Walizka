@@ -35,7 +35,11 @@ public class PackingListDao implements IPackingListDao {
             boolean isPacked = (cursor.getInt(indexIsPacked) == 1);
             int indexListId = cursor.getColumnIndex(PackingListDbContract.PackingListEntry.COL_LIST_ID);
             int listId = cursor.getInt(indexListId);
-            itemsList.add(new SinglePackingListItem(id, itemName, isPacked, listId));
+            int indexCategory = cursor.getColumnIndex(PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY);
+            Category category = Category.valueOf(cursor.getString(indexCategory));
+            int indexIsSelected = cursor.getColumnIndex(PackingListDbContract.PackingListEntry.COL_IS_SELECTED);
+            boolean isItemSelected = (cursor.getInt(indexIsSelected) == 1);
+            itemsList.add(new SinglePackingListItem(id, itemName, isPacked, listId, category, isItemSelected));
         }
         cursor.close();
         database.close();
@@ -64,6 +68,26 @@ public class PackingListDao implements IPackingListDao {
         database.close();
         return updatedRows;
 
+    }
+
+    @Override
+    public int updateItemCategory(SinglePackingListItem singlePackingListItem, Category newCategory) {
+        database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY, String.valueOf(newCategory));
+        int updatedRows = new DbContentProvider().update(PackingListDbContract.PackingListEntry.TABLE, contentValues,
+                PackingListDbContract.PackingListEntry._ID + " = ?", new String[]{String.valueOf(singlePackingListItem.getId())});
+        return updatedRows;
+    }
+
+    @Override
+    public int updateIsItemSelected(SinglePackingListItem singlePackingListItem) {
+        database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PackingListDbContract.PackingListEntry.COL_IS_SELECTED, singlePackingListItem.isSelected());
+        int updatedRows = new DbContentProvider().update(PackingListDbContract.PackingListEntry.COL_IS_SELECTED, contentValues,
+                PackingListDbContract.PackingListEntry._ID + " = ?", new String[]{String.valueOf(singlePackingListItem.getId())});
+        return updatedRows;
     }
 
     @Override

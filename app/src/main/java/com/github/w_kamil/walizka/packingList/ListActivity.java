@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -181,6 +182,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
 
     @Override
     public void setSelectecListItem(SinglePackingListItem singlePackingListItem) {
+        singlePackingListItem.setSelected(true);
         this.selectedListItem = singlePackingListItem;
     }
 
