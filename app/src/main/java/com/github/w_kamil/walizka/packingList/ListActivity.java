@@ -157,7 +157,6 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
             listItem.setPacked(false);
             dao.updateIsItemPacked(listItem);
         }
-
     }
 
 

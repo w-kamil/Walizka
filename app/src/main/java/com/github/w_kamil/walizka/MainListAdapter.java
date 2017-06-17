@@ -35,15 +35,15 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.MyVieH
     @Override
     public void onBindViewHolder(MyVieHolder holder, int position) {
         holder.packageListName.setText(list.get(position).getListName());
+        holder.packageListName.setOnClickListener(null);
+        holder.packageListName.setOnLongClickListener(null);
+        holder.imageView.setOnClickListener(null);
         holder.packageListName.setOnClickListener(v -> {
             onListItemClickListener.OnListItemClick(v, position);
         });
-        holder.packageListName.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                onListItemClickListener.OnLongListNameClick(v,position);
-                return false;
-            }
+        holder.packageListName.setOnLongClickListener(v -> {
+            onListItemClickListener.OnLongListNameClick(v,position);
+            return false;
         });
         holder.imageView.setOnClickListener(v -> {
             onListItemClickListener.onEraseClick(v, position);

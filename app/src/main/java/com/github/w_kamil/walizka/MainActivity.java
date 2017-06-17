@@ -76,12 +76,7 @@ public class MainActivity extends AppCompatActivity implements  OnListItemClickL
         return true;
     }
 
-    private void updateUI() {
-        list = dao.fetchAllLists();
-        MainListAdapter adapter = new MainListAdapter(list);
-        adapter.setOnListItemClickListener(this);
-        recyclerView.setAdapter(adapter);
-    }
+
 
     @Override
     public void onEraseClick(View v, int position) {
@@ -126,5 +121,12 @@ public class MainActivity extends AppCompatActivity implements  OnListItemClickL
             });
         });
         renameListDialog.show();
+    }
+
+    private void updateUI() {
+        list = dao.fetchAllLists();
+        MainListAdapter adapter = new MainListAdapter(list);
+        adapter.setOnListItemClickListener(this);
+        recyclerView.setAdapter(adapter);
     }
 }
