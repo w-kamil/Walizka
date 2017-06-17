@@ -1,17 +1,29 @@
 <resources>
-    <string name="app_name">Walizka</string>
     <string name="add_list">Stwórz nową listę</string>
-    <string name="enter_name">Podaj nazwę</string>
-    <string name="adding_new_list">Dodawanie nowej listy</string>
-    <string name="confirm">Potwierdź</string>
-    <string name="cancel">Anuluj</string>
-    <string name="confirmation">Czy jesteś pewien?</string>
-    <string name="adding_new_list_item">Dodawanie nowej pozycji listy</string>
     <string name="add_new">Dodaj nowy</string>
-    <string name="clear">Wyczyść</string>
-    <string name="remove">Usuń</string>
-    <string name="edit">Edytuj</string>
-    <string name="enter_new_name">Podaj nową nazwę</string>
-    <string name="enter_here">Tu wpisz nazwę</string>
+    <string name="adding_new_list">Dodawanie nowej listy</string>
+    <string name="adding_new_list_item">Dodawanie nowej pozycji listy</string>
+    <string name="app_name">Walizka</string>
+    <string name="cancel">Anuluj</string>
     <string name="changing_list_name">Zmiana nazwy listy</string>
+    <string name="clear">Wyczyść</string>
+    <string name="clothes">ubrania</string>
+    <string name="confirm">Potwierdź</string>
+    <string name="confirmation">Czy jesteś pewien?</string>
+    <string name="cosmetics">kosmetyki</string>
+    <string name="documents">dokumenty</string>
+    <string name="edit">Edytuj</string>
+    <string name="electronic">elektronika</string>
+    <string name="enter_here">Tu wpisz nazwę</string>
+    <string name="enter_name">Podaj nazwę</string>
+    <string name="enter_new_name">Podaj nową nazwę</string>
+    <string name="food">jedzenie</string>
+    <string name="other">inne</string>
+    <string name="play">zabawa</string>
+    <string name="remove">Usuń</string>
+    <string name="sports">sportowe</string>
+    <string name="work">praca</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

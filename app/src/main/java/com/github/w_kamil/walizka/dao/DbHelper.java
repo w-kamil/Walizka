@@ -21,6 +21,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 + PackingListDbContract.PackingListEntry.COL_ITEM_NAME + " TEXT NOT NULL, "
                 + PackingListDbContract.PackingListEntry.COL_IS_ITEM_PACKED + " INTEGER DEFAULT 0, "
                 + PackingListDbContract.PackingListEntry.COL_LIST_ID + " INTEGER NOT NULL, "
+                + PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY + " TEXT DEFAULT OTHER, "
                 + "FOREIGN KEY (" + PackingListDbContract.PackingListEntry.COL_LIST_ID + ") REFERENCES "
                 + PackingListDbContract.ListOfLists.TABLE + " (" + PackingListDbContract.ListOfLists._ID + "));";
 
@@ -30,8 +31,12 @@ public class DbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + PackingListDbContract.ListOfLists.TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + PackingListDbContract.PackingListEntry.TABLE);
-        onCreate(db);
+        switch (oldVersion) {
+            case 1:
+                db.execSQL("ALTER TABLE " + PackingListDbContract.PackingListEntry.TABLE +
+                        " ADD COLUMN " + PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY + " TEXT DEFAULT OTHER;");
+                break;
+
+        }
     }
 }

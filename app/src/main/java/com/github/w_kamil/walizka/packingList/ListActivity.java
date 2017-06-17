@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -159,15 +160,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
 
     }
 
-    private void updateUI() {
-        list = new ArrayList<>();
-        list.addAll(dao.fetchAllItemsInList(packingList));
-        Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
-        adapter = new PackingListAdapter(list);
-        adapter.setOnCheckBoxChangedListener(this);
-        adapter.setOnLongListItemClickListener(this);
-        recyclerView.setAdapter(adapter);
-    }
+
 
     @Override
     public void onCheckBoxClick(View v, int position, boolean isChecked) {
@@ -179,8 +172,10 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         updateUI();
     }
 
+
     @Override
     public void setSelectecListItem(SinglePackingListItem singlePackingListItem) {
+        singlePackingListItem.setSelected(true);
         this.selectedListItem = singlePackingListItem;
     }
 
@@ -206,4 +201,14 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
             super.onBackPressed();
         }
     }
+    private void updateUI() {
+        list = new ArrayList<>();
+        list.addAll(dao.fetchAllItemsInList(packingList));
+        Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
+        adapter = new PackingListAdapter(list);
+        adapter.setOnCheckBoxChangedListener(this);
+        adapter.setOnLongListItemClickListener(this);
+        recyclerView.setAdapter(adapter);
+    }
+
 }

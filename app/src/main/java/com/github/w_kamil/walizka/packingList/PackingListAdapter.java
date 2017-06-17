@@ -2,11 +2,14 @@ package com.github.w_kamil.walizka.packingList;
 
 
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,7 +22,8 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
 
     private List<SinglePackingListItem> list;
     private OnCheckBoxChangedListener onCheckBoxChangedListener;
-    private  OnLongListItemClickListener onLongListItemClickListener;
+    private OnLongListItemClickListener onLongListItemClickListener;
+
     private boolean longClickSelectionFlag;
 
     public PackingListAdapter(List<SinglePackingListItem> list) {
@@ -34,47 +38,64 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         this.onLongListItemClickListener = onLongListItemClickListener;
     }
 
+
+
     @Override
     public PackingListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_packing_list_item, parent, false);
         return new MyViewHolder(layout);
     }
 
+
     @Override
     public void onBindViewHolder(PackingListAdapter.MyViewHolder holder, int position) {
         holder.name.setText(list.get(position).getItemName());
+        holder.checkBox.setOnCheckedChangeListener(null);
+        holder.name.setOnLongClickListener(null);
+        holder.itemImageView.setImageResource(list.get(position).getItemCategory().getDrawingResource());
         holder.checkBox.setChecked(list.get(position).isPacked());
-        if(holder.checkBox.isChecked()){
-            holder.singleItemLineraLayout.setBackgroundColor(Color.parseColor("#D7CCC8"));
+
+        if (list.get(position).isSelected()) {
+            holder.singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(holder.singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
+        } else if (holder.checkBox.isChecked()) {
+            holder.singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(holder.singleItemLineraLayout.getContext(), R.color.colorPackedListItem));
+        } else {
+            holder.singleItemLineraLayout.setBackgroundColor(Color.TRANSPARENT);
         }
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> onCheckBoxChangedListener.onCheckBoxClick(buttonView, position, isChecked));
+        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            onCheckBoxChangedListener.onCheckBoxClick(buttonView, position, isChecked);
+        });
         holder.name.setOnLongClickListener(v -> {
-            if(!longClickSelectionFlag) {
-                holder.singleItemLineraLayout.setBackgroundColor(Color.parseColor("#CFD8DC"));
+            if (!longClickSelectionFlag) {
+                holder.singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(holder.singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
                 onLongListItemClickListener.setSelectecListItem(list.get(position));
                 longClickSelectionFlag = true;
                 return onLongListItemClickListener.updateMenu();
-            }else {
+            } else {
                 return false;
             }
         });
     }
+
 
     @Override
     public int getItemCount() {
         return list.size();
     }
 
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView name;
         CheckBox checkBox;
+        ImageView itemImageView;
         LinearLayout singleItemLineraLayout;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.name_text_view);
             checkBox = (CheckBox) itemView.findViewById(R.id.checkbox);
+            itemImageView = (ImageView) itemView.findViewById(R.id.item_image_view);
             singleItemLineraLayout = (LinearLayout) itemView.findViewById(R.id.single_item_linear_layout);
         }
     }
