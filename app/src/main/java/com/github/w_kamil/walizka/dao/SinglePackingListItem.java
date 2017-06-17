@@ -1,13 +1,15 @@
 package com.github.w_kamil.walizka.dao;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.util.Comparator;
 
 import static com.github.w_kamil.walizka.dao.Category.OTHER;
 
-public class SinglePackingListItem implements Comparable<SinglePackingListItem> {
+public class SinglePackingListItem implements Comparable<SinglePackingListItem>, Parcelable{
 
     private int id;
     private String itemName;
@@ -33,6 +35,27 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem> 
         this.itemCategory = itemCategory;
         this.isSelected = isSelected;
     }
+
+    protected SinglePackingListItem(Parcel in) {
+        id = in.readInt();
+        itemName = in.readString();
+        isPacked = in.readByte() != 0;
+        listId = in.readInt();
+        itemCategory = Category.valueOf(in.readString());
+        isSelected = in.readByte() != 0;
+    }
+
+    public static final Creator<SinglePackingListItem> CREATOR = new Creator<SinglePackingListItem>() {
+        @Override
+        public SinglePackingListItem createFromParcel(Parcel in) {
+            return new SinglePackingListItem(in);
+        }
+
+        @Override
+        public SinglePackingListItem[] newArray(int size) {
+            return new SinglePackingListItem[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -92,4 +115,19 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem> 
             return o1.compareTo(o2);
         }
     };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(itemName);
+        dest.writeByte((byte) (isPacked ? 1 : 0));
+        dest.writeInt(listId);
+        dest.writeString(String.valueOf(itemCategory));
+        dest.writeByte((byte) (isSelected ? 1 : 0));
+    }
 }

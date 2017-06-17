@@ -37,9 +37,7 @@ public class PackingListDao implements IPackingListDao {
             int listId = cursor.getInt(indexListId);
             int indexCategory = cursor.getColumnIndex(PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY);
             Category category = Category.valueOf(cursor.getString(indexCategory));
-            int indexIsSelected = cursor.getColumnIndex(PackingListDbContract.PackingListEntry.COL_IS_SELECTED);
-            boolean isItemSelected = (cursor.getInt(indexIsSelected) == 1);
-            itemsList.add(new SinglePackingListItem(id, itemName, isPacked, listId, category, isItemSelected));
+            itemsList.add(new SinglePackingListItem(id, itemName, isPacked, listId, category, false));
         }
         cursor.close();
         database.close();
@@ -80,15 +78,7 @@ public class PackingListDao implements IPackingListDao {
         return updatedRows;
     }
 
-    @Override
-    public int updateIsItemSelected(SinglePackingListItem singlePackingListItem) {
-        database = dbHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(PackingListDbContract.PackingListEntry.COL_IS_SELECTED, singlePackingListItem.isSelected());
-        int updatedRows = new DbContentProvider().update(PackingListDbContract.PackingListEntry.COL_IS_SELECTED, contentValues,
-                PackingListDbContract.PackingListEntry._ID + " = ?", new String[]{String.valueOf(singlePackingListItem.getId())});
-        return updatedRows;
-    }
+
 
     @Override
     public int renameListItem(SinglePackingListItem singlePackingListItem, String newName) {
