@@ -8,14 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.w_kamil.walizka.R;
@@ -160,7 +158,6 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
     }
 
 
-
     @Override
     public void onCheckBoxClick(View v, int position, boolean isChecked) {
         if (optionalMenuViewFlag) {
@@ -176,6 +173,10 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
     public void setSelectecListItem(SinglePackingListItem singlePackingListItem) {
         singlePackingListItem.setSelected(true);
         this.selectedListItem = singlePackingListItem;
+    }
+
+    @Override
+    public void onCategoryImageClick(View v, int position) {
     }
 
     @Override
@@ -200,6 +201,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
             super.onBackPressed();
         }
     }
+
     private void updateUI() {
         list = new ArrayList<>();
         list.addAll(dao.fetchAllItemsInList(packingList));
@@ -211,8 +213,5 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         recyclerView.setAdapter(adapter);
     }
 
-    @Override
-    public void onCategoryImageClick(View v, int position) {
 
-    }
 }

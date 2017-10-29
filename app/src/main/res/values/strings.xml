@@ -6,6 +6,7 @@
     <string name="app_name">Walizka</string>
     <string name="cancel">Anuluj</string>
     <string name="changing_list_name">Zmiana nazwy listy</string>
+    <string name="choose_category">Wybierz kategorię</string>
     <string name="clear">Wyczyść</string>
     <string name="clothes">ubrania</string>
     <string name="confirm">Potwierdź</string>
@@ -23,7 +24,4 @@
     <string name="remove">Usuń</string>
     <string name="sports">sportowe</string>
     <string name="work">praca</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

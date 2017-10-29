@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp"
+        android:text="@string/choose_category"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/category_clothes"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_clothes"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="@string/clothes"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/category_cosmetics"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_cosmetics"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="@string/cosmetics"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/category_documents"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_documents"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="@string/documents"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/category_electronic"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_electronic"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="@string/electronic"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/category_food"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_food"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="@string/food"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/category_play"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_play"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="@string/play"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+
+        <TextView
+            android:id="@+id/category_sport"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_sport"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="@string/sports"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/category_work"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_work"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="@string/work"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/category_other"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_other"
+            android:gravity="center_horizontal"
+            android:padding="16dp"
+            android:text="@string/other"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/cancel_category_choice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="10dp"
+        android:text="@string/cancel"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+</LinearLayout>

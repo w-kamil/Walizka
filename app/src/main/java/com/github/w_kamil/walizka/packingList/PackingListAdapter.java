@@ -81,7 +81,7 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
             }
         });
         holder.itemImageView.setOnClickListener(v -> {
-            
+            onCategoryImageClickListener.onCategoryImageClick(v, position);
         });
     }
 
