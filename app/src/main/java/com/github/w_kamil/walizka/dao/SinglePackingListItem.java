@@ -105,6 +105,8 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
         } else {
             return categoryCompare;
         }
+
+        //TODO improve sorting
     }
 
     public static Comparator<SinglePackingListItem> singlePackingListItemComparator

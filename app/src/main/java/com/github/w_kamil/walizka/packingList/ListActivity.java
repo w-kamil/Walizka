@@ -3,6 +3,7 @@ package com.github.w_kamil.walizka.packingList;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,11 +13,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.w_kamil.walizka.R;
+import com.github.w_kamil.walizka.dao.Category;
 import com.github.w_kamil.walizka.dao.PackingList;
 import com.github.w_kamil.walizka.dao.PackingListDao;
 import com.github.w_kamil.walizka.dao.SinglePackingListItem;
@@ -39,8 +45,6 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
     Menu menu;
     private ArrayList<SinglePackingListItem> list;
     private SinglePackingListItem selectedListItem;
-    private PackingListAdapter adapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,6 +181,31 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
 
     @Override
     public void onCategoryImageClick(View v, int position) {
+        Category[] categories = new Categories().getCategories();
+        ListAdapter adapter = new ArrayAdapter<Category>(
+                this,
+                android.R.layout.select_dialog_item,
+                android.R.id.text1,
+                categories){
+            @NonNull
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                TextView textView = (TextView)v.findViewById(android.R.id.text1);
+                textView.setText(categories[position].getCategoryName());
+                textView.setCompoundDrawablesWithIntrinsicBounds(categories[position].getDrawingResource(), 0, 0, 0);
+                int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
+                textView.setCompoundDrawablePadding(dp5);
+                return v;
+            }
+        };
+        AlertDialog chooseCategoryDialog = new AlertDialog.Builder(this)
+                .setAdapter(adapter, (dialog, which) -> {
+                    dao.updateItemCategory(list.get(position), categories[which]);
+                    updateUI();
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .create();
+        chooseCategoryDialog.show();
     }
 
     @Override
@@ -206,12 +235,10 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         list = new ArrayList<>();
         list.addAll(dao.fetchAllItemsInList(packingList));
         Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
-        adapter = new PackingListAdapter(list);
+        PackingListAdapter adapter = new PackingListAdapter(list);
         adapter.setOnCheckBoxChangedListener(this);
         adapter.setOnLongListItemClickListener(this);
         adapter.setOnCategoryImageClickListener(this);
         recyclerView.setAdapter(adapter);
     }
-
-
 }
