@@ -9,7 +9,7 @@ import java.util.Comparator;
 
 import static com.github.w_kamil.walizka.dao.Category.OTHER;
 
-public class SinglePackingListItem implements Comparable<SinglePackingListItem>, Parcelable{
+public class SinglePackingListItem implements Comparable<SinglePackingListItem>, Parcelable {
 
     private int id;
     private String itemName;
@@ -89,7 +89,7 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
         isPacked = packed;
     }
 
-    public void setItemCategory(Category itemCategory){
+    public void setItemCategory(Category itemCategory) {
         this.itemCategory = itemCategory;
     }
 
@@ -100,23 +100,16 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
     @Override
     public int compareTo(@NonNull SinglePackingListItem o) {
         int categoryCompare = (this.itemCategory.compareTo(o.itemCategory));
-        if((this.itemCategory.compareTo(o.itemCategory)) == 0){
-            return (this.isPacked() == o.isPacked()) ? 0 : (o.isPacked() ? -1 : 1);
-        } else {
+        int isPackedCompare = this.isPacked() == o.isPacked() ? 0 : (o.isPacked() ? -1 : 1);
+        if (isPackedCompare == 0 && categoryCompare == 0) {
+            return this.itemName.compareTo(o.getItemName());
+        } else if (isPackedCompare == 0) {
             return categoryCompare;
-        }
-
-        //TODO improve sorting
+        } else return isPackedCompare;
     }
 
     public static Comparator<SinglePackingListItem> singlePackingListItemComparator
-            = new Comparator<SinglePackingListItem>() {
-
-        @Override
-        public int compare(SinglePackingListItem o1, SinglePackingListItem o2) {
-            return o1.compareTo(o2);
-        }
-    };
+            = SinglePackingListItem::compareTo;
 
     @Override
     public int describeContents() {
