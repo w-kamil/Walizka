@@ -21,10 +21,10 @@ public class PackingListDao implements IPackingListDao {
     }
 
     @Override
-    public List<SinglePackingListItem> fetchAllItemsInList(PackingList packingList) {
+    public List<SinglePackingListItem> fetchAllItemsInList(String packingListName) {
         database = dbHelper.getReadableDatabase();
         cursor = new DbContentProvider().query(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.COLUMNS_NAMES_ITEMS,
-                PackingListDbContract.PackingListEntry.COL_LIST_ID + " = ?", new String[]{String.valueOf(packingList.getId())});
+                PackingListDbContract.PackingListEntry.COL_LIST_NAME + " = ?", new String[]{String.valueOf(packingListName)});
         List<SinglePackingListItem> itemsList = new ArrayList<>();
         while (cursor.moveToNext()) {
             int indexId = cursor.getColumnIndex(PackingListDbContract.PackingListEntry._ID);
@@ -33,11 +33,11 @@ public class PackingListDao implements IPackingListDao {
             String itemName = cursor.getString(indexName);
             int indexIsPacked = cursor.getColumnIndex(PackingListDbContract.PackingListEntry.COL_IS_ITEM_PACKED);
             boolean isPacked = (cursor.getInt(indexIsPacked) == 1);
-            int indexListId = cursor.getColumnIndex(PackingListDbContract.PackingListEntry.COL_LIST_ID);
-            int listId = cursor.getInt(indexListId);
+            int indexListName = cursor.getColumnIndex(PackingListDbContract.PackingListEntry.COL_LIST_NAME);
+            String listName = cursor.getString(indexListName);
             int indexCategory = cursor.getColumnIndex(PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY);
             Category category = Category.valueOf(cursor.getString(indexCategory));
-            itemsList.add(new SinglePackingListItem(id, itemName, isPacked, listId, category, false));
+            itemsList.add(new SinglePackingListItem(id, itemName, isPacked, listName, category, false));
         }
         cursor.close();
         database.close();
@@ -50,7 +50,8 @@ public class PackingListDao implements IPackingListDao {
         ContentValues contentValues = new ContentValues();
         contentValues.put(PackingListDbContract.PackingListEntry.COL_ITEM_NAME, singlePackingListItem.getItemName());
         contentValues.put(PackingListDbContract.PackingListEntry.COL_IS_ITEM_PACKED, singlePackingListItem.isPacked());
-        contentValues.put(PackingListDbContract.PackingListEntry.COL_LIST_ID, singlePackingListItem.getListId());
+        contentValues.put(PackingListDbContract.PackingListEntry.COL_LIST_NAME, singlePackingListItem.getListName());
+        contentValues.put(PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY, String.valueOf(singlePackingListItem.getItemCategory()));
         long insertRowId = new DbContentProvider().insert(PackingListDbContract.PackingListEntry.TABLE, contentValues);
         database.close();
         return insertRowId;
@@ -73,11 +74,9 @@ public class PackingListDao implements IPackingListDao {
         database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY, String.valueOf(newCategory));
-        int updatedRows = new DbContentProvider().update(PackingListDbContract.PackingListEntry.TABLE, contentValues,
+        return new DbContentProvider().update(PackingListDbContract.PackingListEntry.TABLE, contentValues,
                 PackingListDbContract.PackingListEntry._ID + " = ?", new String[]{String.valueOf(singlePackingListItem.getId())});
-        return updatedRows;
     }
-
 
 
     @Override
@@ -85,7 +84,7 @@ public class PackingListDao implements IPackingListDao {
         database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(PackingListDbContract.PackingListEntry.COL_ITEM_NAME, newName);
-        int updatedRows =  new DbContentProvider().update(PackingListDbContract.PackingListEntry.TABLE, contentValues,
+        int updatedRows = new DbContentProvider().update(PackingListDbContract.PackingListEntry.TABLE, contentValues,
                 PackingListDbContract.PackingListEntry._ID + " = ?", new String[]{String.valueOf(singlePackingListItem.getId())});
         database.close();
         return updatedRows;
@@ -94,9 +93,8 @@ public class PackingListDao implements IPackingListDao {
     @Override
     public int removeItemFromList(SinglePackingListItem singlePackingListItem) {
         database = dbHelper.getWritableDatabase();
-        int deletedRows = new DbContentProvider().delete(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.PackingListEntry._ID + " = ?",
+        return new DbContentProvider().delete(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.PackingListEntry._ID + " = ?",
                 new String[]{String.valueOf(singlePackingListItem.getId())});
-        return deletedRows;
     }
 
     @Override
@@ -128,44 +126,44 @@ public class PackingListDao implements IPackingListDao {
     }
 
     @Override
-    public int renameList(PackingList packingList, String newListName) {
+    public int renameList(String oldListName, String newListName) {
         database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(PackingListDbContract.ListOfLists.COL_LIST_NAME, newListName);
-        int updatedRows =  new DbContentProvider().update(PackingListDbContract.ListOfLists.TABLE, contentValues,
-                PackingListDbContract.ListOfLists._ID + " = ?", new String[]{String.valueOf(packingList.getId())});
+        int updatedRows = new DbContentProvider().update(PackingListDbContract.ListOfLists.TABLE, contentValues,
+                PackingListDbContract.ListOfLists.COL_LIST_NAME + " = ?", new String[]{oldListName});
         database.close();
         return updatedRows;
     }
 
     @Override
-    public int removeExistingPackingList(PackingList packingList) {
+    public int removeExistingPackingList(String packingListName) {
         database = dbHelper.getWritableDatabase();
-        //jak połączyć w jedno wyrażenie usunięcie listy z listy głównej z usunięciem wszystkich jej składników na liście głównej?
-        new DbContentProvider().delete(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.PackingListEntry.COL_LIST_ID + " = ?",
-                new String[]{String.valueOf(packingList.getId())});
-        int deletedRows = new DbContentProvider().delete(PackingListDbContract.ListOfLists.TABLE, PackingListDbContract.ListOfLists._ID + " = ?",
-                new String[]{String.valueOf(packingList.getId())});
-        return deletedRows;
+        new DbContentProvider().delete(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.PackingListEntry.COL_LIST_NAME + " = ?",
+                new String[]{String.valueOf(packingListName)});
+        int deleted = new DbContentProvider().delete(PackingListDbContract.ListOfLists.TABLE, PackingListDbContract.ListOfLists.COL_LIST_NAME + " = ?",
+                new String[]{packingListName});
+        database.close();
+        return deleted;
+
     }
 
     private class DbContentProvider {
 
 
         protected Cursor query(String tableName, String[] columnNames, String selection, String[] selectionArgs) {
-
             return database.query(tableName, columnNames, selection, selectionArgs, null, null, null);
         }
 
-        protected long insert(String tableName, ContentValues values) {
+        long insert(String tableName, ContentValues values) {
             return database.insertWithOnConflict(tableName, null, values, SQLiteDatabase.CONFLICT_ROLLBACK);
         }
 
-        protected int delete(String tableName, String selectionString, String[] selectionArgs) {
+        int delete(String tableName, String selectionString, String[] selectionArgs) {
             return database.delete(tableName, selectionString, selectionArgs);
         }
 
-        protected int update(String tableName, ContentValues values, String whereClause, String[] wherenArgs) {
+        int update(String tableName, ContentValues values, String whereClause, String[] wherenArgs) {
             return database.update(tableName, values, whereClause, wherenArgs);
         }
 

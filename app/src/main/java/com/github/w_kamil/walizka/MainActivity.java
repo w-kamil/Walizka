@@ -1,8 +1,8 @@
 package com.github.w_kamil.walizka;
 
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,13 +23,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements  OnListItemClickListener {
+public class MainActivity extends AppCompatActivity implements OnListItemClickListener {
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     private PackingListDao dao;
-    private List<PackingList> list;
-
+    private MainListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements  OnListItemClickL
                             Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
                         } else {
                             dao.addNewPackingList(listNameEditText.getText().toString());
-                            updateUI();
+                            adapter.addPackingList(listNameEditText.getText().toString());
                             addNewListDialog.dismiss();
                         }
                     }
@@ -77,14 +76,13 @@ public class MainActivity extends AppCompatActivity implements  OnListItemClickL
     }
 
 
-
     @Override
-    public void onEraseClick(View v, int position) {
+    public void onEraseClick(String packingListName, int position) {
         AlertDialog deleteListDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.confirmation)
                 .setPositiveButton(R.string.confirm, (dialog, which) -> {
-                    dao.removeExistingPackingList(list.get(position));
-                    updateUI();
+                    dao.removeExistingPackingList(packingListName);
+                    adapter.removePackingList(position);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .create();
@@ -93,12 +91,12 @@ public class MainActivity extends AppCompatActivity implements  OnListItemClickL
 
 
     @Override
-    public void OnListItemClick(View v, int position) {
-        startActivity(ListActivity.createIntent(this, list.get(position)));
+    public void OnListItemClick(String listName) {
+        startActivity(ListActivity.createIntent(this, listName));
     }
 
     @Override
-    public void OnLongListNameClick(View v, int position) {
+    public void OnLongListNameClick(String listName, int position) {
         LayoutInflater renameListInflater = getLayoutInflater();
         View renameListLayout = renameListInflater.inflate(R.layout.dialog_rename, null);
         AlertDialog renameListDialog = new AlertDialog.Builder(this)
@@ -109,13 +107,13 @@ public class MainActivity extends AppCompatActivity implements  OnListItemClickL
                 .create();
         renameListDialog.setOnShowListener(dialog -> {
             Button positiveButton = renameListDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            EditText newListNameEditText = (EditText) renameListDialog.findViewById(R.id.new_name_edit_text);
+            EditText newListNameEditText = renameListDialog.findViewById(R.id.new_name_edit_text);
             positiveButton.setOnClickListener(v1 -> {
                 if (newListNameEditText.getText().length() == 0) {
                     Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
-                }else {
-                    dao.renameList(list.get(position), newListNameEditText.getText().toString());
-                    updateUI();
+                } else {
+                    dao.renameList(listName, newListNameEditText.getText().toString());
+                    adapter.renamePackingList(position, newListNameEditText.getText().toString()); // TODO handle duplicated namse exception
                     renameListDialog.dismiss();
                 }
             });
@@ -124,8 +122,8 @@ public class MainActivity extends AppCompatActivity implements  OnListItemClickL
     }
 
     private void updateUI() {
-        list = dao.fetchAllLists();
-        MainListAdapter adapter = new MainListAdapter(list);
+        List<PackingList> list = dao.fetchAllLists();
+        adapter = new MainListAdapter(list);
         adapter.setOnListItemClickListener(this);
         recyclerView.setAdapter(adapter);
     }

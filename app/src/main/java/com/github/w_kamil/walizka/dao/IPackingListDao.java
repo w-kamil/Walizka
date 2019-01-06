@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface IPackingListDao {
 
-    List<SinglePackingListItem> fetchAllItemsInList(PackingList packingList);
+    List<SinglePackingListItem> fetchAllItemsInList(String packingListName);
     long addSingleListItem(SinglePackingListItem singlePackingListItem);
     int updateIsItemPacked(SinglePackingListItem singlePackingListItem);
     int updateItemCategory(SinglePackingListItem singlePackingListItem, Category newCategory);
@@ -13,6 +13,6 @@ public interface IPackingListDao {
     int removeItemFromList(SinglePackingListItem singlePackingListItem);
     List<PackingList> fetchAllLists();
     long addNewPackingList(String listName);
-    int renameList(PackingList packingList, String newListName);
-    int removeExistingPackingList(PackingList packingList);
+    int renameList(String oldListName, String newListName);
+    int removeExistingPackingList(String packingList);
 }

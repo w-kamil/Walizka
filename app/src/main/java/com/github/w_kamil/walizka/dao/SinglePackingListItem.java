@@ -14,33 +14,33 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
     private int id;
     private String itemName;
     private boolean isPacked;
-    private final int listId;
+    private final String listName;
     private Category itemCategory;
     private boolean isSelected;
 
 
-    public SinglePackingListItem(String itemName, boolean isPacked, int listId) {
+    public SinglePackingListItem(String itemName, boolean isPacked, String listName) {
         this.itemName = itemName;
         this.isPacked = isPacked;
-        this.listId = listId;
+        this.listName = listName;
         itemCategory = OTHER;
         this.isSelected = false;
     }
 
-    public SinglePackingListItem(int id, String itemName, boolean isPacked, int listId, Category itemCategory, boolean isSelected) {
+    SinglePackingListItem(int id, String itemName, boolean isPacked, String listName, Category itemCategory, boolean isSelected) {
         this.id = id;
         this.itemName = itemName;
         this.isPacked = isPacked;
-        this.listId = listId;
+        this.listName = listName;
         this.itemCategory = itemCategory;
         this.isSelected = isSelected;
     }
 
-    protected SinglePackingListItem(Parcel in) {
+    private SinglePackingListItem(Parcel in) {
         id = in.readInt();
         itemName = in.readString();
         isPacked = in.readByte() != 0;
-        listId = in.readInt();
+        listName = in.readString();
         itemCategory = Category.valueOf(in.readString());
         isSelected = in.readByte() != 0;
     }
@@ -69,8 +69,8 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
         return isPacked;
     }
 
-    public int getListId() {
-        return listId;
+    String getListName() {
+        return listName;
     }
 
     public Category getItemCategory() {
@@ -81,16 +81,8 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
         return isSelected;
     }
 
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
     public void setPacked(boolean packed) {
         isPacked = packed;
-    }
-
-    public void setItemCategory(Category itemCategory) {
-        this.itemCategory = itemCategory;
     }
 
     public void setSelected(boolean selected) {
@@ -121,7 +113,7 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
         dest.writeInt(id);
         dest.writeString(itemName);
         dest.writeByte((byte) (isPacked ? 1 : 0));
-        dest.writeInt(listId);
+        dest.writeString(listName);
         dest.writeString(String.valueOf(itemCategory));
         dest.writeByte((byte) (isSelected ? 1 : 0));
     }

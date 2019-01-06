@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import com.github.w_kamil.walizka.R;
 import com.github.w_kamil.walizka.dao.Category;
-import com.github.w_kamil.walizka.dao.PackingList;
 import com.github.w_kamil.walizka.dao.PackingListDao;
 import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 
@@ -35,12 +34,12 @@ import butterknife.ButterKnife;
 
 public class ListActivity extends AppCompatActivity implements OnCheckBoxChangedListener, OnLongListItemClickListener, OnCategoryImageClickListener {
 
-    public static final String PACKING_LIST = "packingList";
+    public static final String PACKING_LIST = "packingListName";
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
     PackingListDao dao;
-    PackingList packingList;
+    String packingListName;
     boolean optionalMenuViewFlag;
     Menu menu;
     private ArrayList<SinglePackingListItem> list;
@@ -54,14 +53,14 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         recyclerView.addItemDecoration(new DividerItemDecoration(this,
                 LinearLayoutManager.VERTICAL));
         dao = new PackingListDao(this);
-        packingList = getIntent().getExtras().getParcelable(PACKING_LIST);
-        setTitle(packingList.getListName());
+        packingListName = getIntent().getStringExtra(PACKING_LIST);
+        setTitle(packingListName);
         updateUI();
     }
 
-    public static Intent createIntent(Context context, PackingList packingList) {
+    public static Intent createIntent(Context context, String packingListName) {
         Intent intent = new Intent(context, ListActivity.class);
-        intent.putExtra(PACKING_LIST, packingList);
+        intent.putExtra(PACKING_LIST, packingListName);
         return intent;
     }
 
@@ -91,7 +90,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                                 if (listItemNameEditText.getText().length() == 0) {
                                     Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    dao.addSingleListItem(new SinglePackingListItem(listItemNameEditText.getText().toString(), false, packingList.getId()));
+                                    dao.addSingleListItem(new SinglePackingListItem(listItemNameEditText.getText().toString(), false, packingListName));
                                     updateUI();
                                     addNewListItemDialog.dismiss();
                                 }
@@ -200,7 +199,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         };
         AlertDialog chooseCategoryDialog = new AlertDialog.Builder(this)
                 .setAdapter(adapter, (dialog, which) -> {
-                    dao.updateItemCategory(list.get(position), categories[which]);
+                    dao.updateItemCategory(list.get(position), categories[which]); // TODO fit data names in database
                     updateUI();
                 })
                 .setNegativeButton(R.string.cancel, null)
@@ -233,7 +232,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
 
     private void updateUI() {
         list = new ArrayList<>();
-        list.addAll(dao.fetchAllItemsInList(packingList));
+        list.addAll(dao.fetchAllItemsInList(packingListName));
         Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
         PackingListAdapter adapter = new PackingListAdapter(list);
         adapter.setOnCheckBoxChangedListener(this);
