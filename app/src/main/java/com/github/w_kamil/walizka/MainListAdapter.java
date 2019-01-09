@@ -27,8 +27,9 @@ public class MainListAdapter extends RecyclerView.Adapter<MainListAdapter.MyVieH
         this.list = list;
     }
 
+    @NonNull
     @Override
-    public MyVieHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyVieHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_list_card, parent, false);
         return new MyVieHolder(layout);
     }

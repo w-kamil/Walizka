@@ -4,6 +4,6 @@ import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 
 
 public interface OnLongListItemClickListener  {
-    void setSelectecListItem( SinglePackingListItem singlePackingListItem);
+    void setSelectecListItem( SinglePackingListItem singlePackingListItem, int position);
     boolean updateMenu();
 }

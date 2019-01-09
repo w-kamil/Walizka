@@ -140,7 +140,7 @@ public class PackingListDao implements IPackingListDao {
     public int removeExistingPackingList(String packingListName) {
         database = dbHelper.getWritableDatabase();
         new DbContentProvider().delete(PackingListDbContract.PackingListEntry.TABLE, PackingListDbContract.PackingListEntry.COL_LIST_NAME + " = ?",
-                new String[]{String.valueOf(packingListName)});
+                new String[]{packingListName});
         int deleted = new DbContentProvider().delete(PackingListDbContract.ListOfLists.TABLE, PackingListDbContract.ListOfLists.COL_LIST_NAME + " = ?",
                 new String[]{packingListName});
         database.close();

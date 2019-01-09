@@ -2,9 +2,9 @@ package com.github.w_kamil.walizka.packingList;
 
 
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,20 +43,21 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         this.onCategoryImageClickListener = onCategoryImageClickListener;
     }
 
-
+    @NonNull
     @Override
-    public PackingListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PackingListAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View layout = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_packing_list_item, parent, false);
         return new MyViewHolder(layout);
     }
 
+    void removeSinglePackingListItem(int position) {
+        list.remove(position);
+        notifyItemRemoved(position);
+    }
 
     @Override
-    public void onBindViewHolder(PackingListAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PackingListAdapter.MyViewHolder holder, int position) {
         holder.name.setText(list.get(position).getItemName());
-        holder.checkBox.setOnCheckedChangeListener(null);
-        holder.name.setOnLongClickListener(null);
-        holder.itemImageView.setOnClickListener(null);
         holder.itemImageView.setImageResource(list.get(position).getItemCategory().getDrawingResource());
         holder.checkBox.setChecked(list.get(position).isPacked());
 
@@ -67,30 +68,12 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         } else {
             holder.singleItemLineraLayout.setBackgroundColor(Color.TRANSPARENT);
         }
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            onCheckBoxChangedListener.onCheckBoxClick(buttonView, position, isChecked);
-        });
-        holder.name.setOnLongClickListener(v -> {
-            if (!longClickSelectionFlag) {
-                holder.singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(holder.singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
-                onLongListItemClickListener.setSelectecListItem(list.get(position));
-                longClickSelectionFlag = true;
-                return onLongListItemClickListener.updateMenu();
-            } else {
-                return false;
-            }
-        });
-        holder.itemImageView.setOnClickListener(v -> {
-            onCategoryImageClickListener.onCategoryImageClick(v, position);
-        });
     }
-
 
     @Override
     public int getItemCount() {
         return list.size();
     }
-
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -101,10 +84,28 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            name = (TextView) itemView.findViewById(R.id.name_text_view);
-            checkBox = (CheckBox) itemView.findViewById(R.id.checkbox);
-            itemImageView = (ImageView) itemView.findViewById(R.id.item_image_view);
-            singleItemLineraLayout = (LinearLayout) itemView.findViewById(R.id.single_item_linear_layout);
+            name = itemView.findViewById(R.id.name_text_view);
+            checkBox = itemView.findViewById(R.id.checkbox);
+            itemImageView = itemView.findViewById(R.id.item_image_view);
+            singleItemLineraLayout = itemView.findViewById(R.id.single_item_linear_layout);
+
+            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                onCheckBoxChangedListener.onCheckBoxClick(buttonView, getAdapterPosition(), isChecked);
+            });
+            name.setOnLongClickListener(v -> {
+                if (!longClickSelectionFlag) {
+                    singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
+                    onLongListItemClickListener.setSelectecListItem(list.get(getAdapterPosition()), getAdapterPosition());
+                    longClickSelectionFlag = true;
+                    return onLongListItemClickListener.updateMenu();
+                } else {
+                    return false;
+                    // TODO modify selectionFlag solution to handle for more selections
+                }
+            });
+            itemImageView.setOnClickListener(v -> {
+                onCategoryImageClickListener.onCategoryImageClick(v, getAdapterPosition());
+            });
         }
     }
 }

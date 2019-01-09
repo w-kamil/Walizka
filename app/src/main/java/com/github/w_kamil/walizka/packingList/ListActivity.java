@@ -26,8 +26,8 @@ import com.github.w_kamil.walizka.dao.Category;
 import com.github.w_kamil.walizka.dao.PackingListDao;
 import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,8 +42,10 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
     String packingListName;
     boolean optionalMenuViewFlag;
     Menu menu;
-    private ArrayList<SinglePackingListItem> list;
+    private List<SinglePackingListItem> list;
     private SinglePackingListItem selectedListItem;
+    private Integer selectedItemPosition;
+    private PackingListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +117,8 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                         .setTitle(R.string.confirmation)
                         .setPositiveButton(R.string.confirm, (dialog, which) -> {
                             dao.removeItemFromList(selectedListItem);
-                            updateUI();
-                            updateMenu();
+                            adapter.removeSinglePackingListItem(selectedItemPosition);
+                            clearMenu();
                         })
                         .setNegativeButton(R.string.cancel, null)
                         .create();
@@ -153,6 +155,13 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         }
     }
 
+    private void clearMenu() {
+        menu.clear();
+        getMenuInflater().inflate(R.menu.list_activity_menu, menu);
+        optionalMenuViewFlag = false;
+        selectedItemPosition = null;
+    }
+
     private void resetList() {
         for (SinglePackingListItem listItem : list) {
             listItem.setPacked(false);
@@ -173,9 +182,10 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
 
 
     @Override
-    public void setSelectecListItem(SinglePackingListItem singlePackingListItem) {
+    public void setSelectecListItem(SinglePackingListItem singlePackingListItem, int position) {
         singlePackingListItem.setSelected(true);
         this.selectedListItem = singlePackingListItem;
+        this.selectedItemPosition = position;
     }
 
     @Override
@@ -231,10 +241,9 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
     }
 
     private void updateUI() {
-        list = new ArrayList<>();
-        list.addAll(dao.fetchAllItemsInList(packingListName));
+        list = dao.fetchAllItemsInList(packingListName);
         Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
-        PackingListAdapter adapter = new PackingListAdapter(list);
+        adapter = new PackingListAdapter(list);
         adapter.setOnCheckBoxChangedListener(this);
         adapter.setOnLongListItemClickListener(this);
         adapter.setOnCategoryImageClickListener(this);
