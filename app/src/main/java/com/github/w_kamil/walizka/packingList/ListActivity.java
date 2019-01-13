@@ -32,7 +32,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ListActivity extends AppCompatActivity implements OnCheckBoxChangedListener, OnLongListItemClickListener, OnCategoryImageClickListener {
+public class ListActivity extends AppCompatActivity implements PackingListItemsEventsListener {
 
     public static final String PACKING_LIST = "packingListName";
     @BindView(R.id.recycler_view)
@@ -87,11 +87,9 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                         .create();
                 addNewListItemDialog.setOnShowListener(dialog -> {
                     Button positiveButton = addNewListItemDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                    final EditText listItemNameEditText = (EditText) dialogLayout.findViewById(R.id.item_name_edit_text);
+                    final EditText listItemNameEditText = dialogLayout.findViewById(R.id.item_name_edit_text);
                     positiveButton.setOnClickListener(v -> {
-                                if (listItemNameEditText.getText().length() == 0) {
-                                    Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
-                                } else {
+                                if (validateEnteredName(listItemNameEditText.getText().toString())) {
                                     dao.addSingleListItem(new SinglePackingListItem(listItemNameEditText.getText().toString(), false, packingListName));
                                     updateUI();
                                     addNewListItemDialog.dismiss();
@@ -134,12 +132,14 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                         .create();
                 renameListItemDialog.setOnShowListener(dialog -> {
                     Button positiveButton = renameListItemDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                    final EditText newNameEditText = (EditText) renameDialogLayout.findViewById(R.id.new_name_edit_text);
+                    final EditText newNameEditText = renameDialogLayout.findViewById(R.id.new_name_edit_text);
                     newNameEditText.setText(selectedListItem.getItemName());
                     positiveButton.setOnClickListener(v -> {
-                                if (newNameEditText.getText().length() == 0) {
-                                    Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
-                                } else {
+                                if (newNameEditText.getText().toString().equals(selectedListItem.getItemName())) {
+                                    Toast.makeText(this, getResources().getString(R.string.enter_new_name), Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                if (validateEnteredName(newNameEditText.getText().toString())) {
                                     dao.renameListItem(selectedListItem, newNameEditText.getText().toString());
                                     updateUI();
                                     updateMenu();
@@ -153,6 +153,26 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
             default:
                 return super.onOptionsItemSelected(item);
         }
+
+    }
+
+    private boolean validateEnteredName(final String enteredName) {
+        if (enteredName.length() == 0) {
+            Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (list.stream().map(SinglePackingListItem::getItemName).anyMatch(enteredName::equals)) {
+            Toast.makeText(this, getResources().getString(R.string.item_already_exists), Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void chageMentuToOptional() {
+        menu.clear();
+        getMenuInflater().inflate(R.menu.optional_list_activity_menu, menu);
+        optionalMenuViewFlag = true;
     }
 
     private void clearMenu() {
@@ -169,7 +189,6 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         }
     }
 
-
     @Override
     public void onCheckBoxClick(View v, int position, boolean isChecked) {
         if (optionalMenuViewFlag) {
@@ -179,7 +198,6 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         dao.updateIsItemPacked(list.get(position));
         updateUI();
     }
-
 
     @Override
     public void setSelectecListItem(SinglePackingListItem singlePackingListItem, int position) {
@@ -195,11 +213,11 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
                 this,
                 android.R.layout.select_dialog_item,
                 android.R.id.text1,
-                categories){
+                categories) {
             @NonNull
             public View getView(int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                TextView textView = (TextView)v.findViewById(android.R.id.text1);
+                TextView textView = (TextView) v.findViewById(android.R.id.text1);
                 textView.setText(categories[position].getCategoryName());
                 textView.setCompoundDrawablesWithIntrinsicBounds(categories[position].getDrawingResource(), 0, 0, 0);
                 int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
@@ -244,9 +262,7 @@ public class ListActivity extends AppCompatActivity implements OnCheckBoxChanged
         list = dao.fetchAllItemsInList(packingListName);
         Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
         adapter = new PackingListAdapter(list);
-        adapter.setOnCheckBoxChangedListener(this);
         adapter.setOnLongListItemClickListener(this);
-        adapter.setOnCategoryImageClickListener(this);
         recyclerView.setAdapter(adapter);
     }
 }

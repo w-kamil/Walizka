@@ -21,9 +21,7 @@ import java.util.List;
 public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.MyViewHolder> {
 
     private List<SinglePackingListItem> list;
-    private OnCheckBoxChangedListener onCheckBoxChangedListener;
-    private OnLongListItemClickListener onLongListItemClickListener;
-    private OnCategoryImageClickListener onCategoryImageClickListener;
+    private PackingListItemsEventsListener packingListItemsEventsListener;
 
     private boolean longClickSelectionFlag;
 
@@ -31,17 +29,10 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         this.list = list;
     }
 
-    public void setOnCheckBoxChangedListener(OnCheckBoxChangedListener onCheckBoxChangedListener) {
-        this.onCheckBoxChangedListener = onCheckBoxChangedListener;
+    public void setOnLongListItemClickListener(PackingListItemsEventsListener packingListItemsEventsListener) {
+        this.packingListItemsEventsListener = packingListItemsEventsListener;
     }
 
-    public void setOnLongListItemClickListener(OnLongListItemClickListener onLongListItemClickListener) {
-        this.onLongListItemClickListener = onLongListItemClickListener;
-    }
-
-    public void setOnCategoryImageClickListener(OnCategoryImageClickListener onCategoryImageClickListener) {
-        this.onCategoryImageClickListener = onCategoryImageClickListener;
-    }
 
     @NonNull
     @Override
@@ -75,6 +66,10 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         return list.size();
     }
 
+    public void setLongClickSelectionFlag(boolean longClickSelectionFlag) {
+        this.longClickSelectionFlag = longClickSelectionFlag;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView name;
@@ -88,23 +83,23 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
             checkBox = itemView.findViewById(R.id.checkbox);
             itemImageView = itemView.findViewById(R.id.item_image_view);
             singleItemLineraLayout = itemView.findViewById(R.id.single_item_linear_layout);
-
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                onCheckBoxChangedListener.onCheckBoxClick(buttonView, getAdapterPosition(), isChecked);
+                packingListItemsEventsListener.onCheckBoxClick(buttonView, getAdapterPosition(), isChecked);
             });
             name.setOnLongClickListener(v -> {
                 if (!longClickSelectionFlag) {
+                    list.get(getAdapterPosition()).setSelected(true);
                     singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
-                    onLongListItemClickListener.setSelectecListItem(list.get(getAdapterPosition()), getAdapterPosition());
-                    longClickSelectionFlag = true;
-                    return onLongListItemClickListener.updateMenu();
+                    packingListItemsEventsListener.setSelectecListItem(list.get(MyViewHolder.this.getAdapterPosition()), MyViewHolder.this.getAdapterPosition());
+                    setLongClickSelectionFlag(true);
+                    packingListItemsEventsListener.chageMentuToOptional();
+                    return true;
                 } else {
                     return false;
-                    // TODO modify selectionFlag solution to handle for more selections
                 }
             });
             itemImageView.setOnClickListener(v -> {
-                onCategoryImageClickListener.onCategoryImageClick(v, getAdapterPosition());
+                packingListItemsEventsListener.onCategoryImageClick(v, getAdapterPosition());
             });
         }
     }

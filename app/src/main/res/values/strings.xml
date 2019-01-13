@@ -23,5 +23,6 @@
     <string name="play">zabawa</string>
     <string name="remove">Usuń</string>
     <string name="sports">sportowe</string>
+    <string name="item_already_exists">Podana nazwa już jest na liście</string>
     <string name="work">praca</string>
 </resources>
