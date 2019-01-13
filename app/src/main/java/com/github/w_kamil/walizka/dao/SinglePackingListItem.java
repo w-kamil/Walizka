@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 import static com.github.w_kamil.walizka.dao.Category.OTHER;
 
@@ -69,7 +70,7 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
         return isPacked;
     }
 
-    String getListName() {
+    public String getListName() {
         return listName;
     }
 
@@ -98,6 +99,24 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
         } else if (isPackedCompare == 0) {
             return categoryCompare;
         } else return isPackedCompare;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SinglePackingListItem)) return false;
+        SinglePackingListItem that = (SinglePackingListItem) o;
+        return getId() == that.getId() &&
+                isPacked() == that.isPacked() &&
+                isSelected() == that.isSelected() &&
+                Objects.equals(getItemName(), that.getItemName()) &&
+                Objects.equals(getListName(), that.getListName()) &&
+                getItemCategory() == that.getItemCategory();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getItemName(), isPacked(), getListName(), getItemCategory(), isSelected());
     }
 
     public static Comparator<SinglePackingListItem> singlePackingListItemComparator

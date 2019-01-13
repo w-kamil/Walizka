@@ -90,8 +90,9 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
                     final EditText listItemNameEditText = dialogLayout.findViewById(R.id.item_name_edit_text);
                     positiveButton.setOnClickListener(v -> {
                                 if (validateEnteredName(listItemNameEditText.getText().toString())) {
-                                    dao.addSingleListItem(new SinglePackingListItem(listItemNameEditText.getText().toString(), false, packingListName));
-                                    updateUI();
+                                    SinglePackingListItem singlePackingListItem = new SinglePackingListItem(listItemNameEditText.getText().toString(), false, packingListName);
+                                    dao.addSingleListItem(singlePackingListItem);
+                                    adapter.addSinglePakingListItem(singlePackingListItem.getItemName(), singlePackingListItem.getListName());
                                     addNewListItemDialog.dismiss();
                                 }
                             }
@@ -262,7 +263,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
         list = dao.fetchAllItemsInList(packingListName);
         Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
         adapter = new PackingListAdapter(list);
-        adapter.setOnLongListItemClickListener(this);
+        adapter.setPackingListItemsEventsListener(this);
         recyclerView.setAdapter(adapter);
     }
 }

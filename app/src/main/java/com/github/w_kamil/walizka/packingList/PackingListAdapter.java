@@ -4,7 +4,9 @@ package com.github.w_kamil.walizka.packingList;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.util.SortedListAdapterCallback;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,19 +22,19 @@ import java.util.List;
 
 public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.MyViewHolder> {
 
-    private List<SinglePackingListItem> list;
+    private SortedList<SinglePackingListItem> list;
     private PackingListItemsEventsListener packingListItemsEventsListener;
 
     private boolean longClickSelectionFlag;
 
     public PackingListAdapter(List<SinglePackingListItem> list) {
-        this.list = list;
+        this.list = new SortedList<>(SinglePackingListItem.class, new CustomCallback(this));
+        this.list.addAll(list);
     }
 
-    public void setOnLongListItemClickListener(PackingListItemsEventsListener packingListItemsEventsListener) {
+    public void setPackingListItemsEventsListener(PackingListItemsEventsListener packingListItemsEventsListener) {
         this.packingListItemsEventsListener = packingListItemsEventsListener;
     }
-
 
     @NonNull
     @Override
@@ -41,9 +43,12 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         return new MyViewHolder(layout);
     }
 
+    void addSinglePakingListItem(String itemName, String listName) {
+        list.add(new SinglePackingListItem(itemName, false, listName));
+    }
+
     void removeSinglePackingListItem(int position) {
-        list.remove(position);
-        notifyItemRemoved(position);
+        list.removeItemAt(position);
     }
 
     @Override
@@ -51,7 +56,6 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         holder.name.setText(list.get(position).getItemName());
         holder.itemImageView.setImageResource(list.get(position).getItemCategory().getDrawingResource());
         holder.checkBox.setChecked(list.get(position).isPacked());
-
         if (list.get(position).isSelected()) {
             holder.singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(holder.singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
         } else if (holder.checkBox.isChecked()) {
@@ -101,6 +105,28 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
             itemImageView.setOnClickListener(v -> {
                 packingListItemsEventsListener.onCategoryImageClick(v, getAdapterPosition());
             });
+        }
+    }
+
+    static class CustomCallback extends SortedListAdapterCallback<SinglePackingListItem> {
+
+        CustomCallback(RecyclerView.Adapter adapter) {
+            super(adapter);
+        }
+
+        @Override
+        public int compare(SinglePackingListItem item1, SinglePackingListItem item2) {
+            return item1.compareTo(item2);
+        }
+
+        @Override
+        public boolean areContentsTheSame(SinglePackingListItem item1, SinglePackingListItem item2) {
+            return item1.compareTo(item2) == 0;
+        }
+
+        @Override
+        public boolean areItemsTheSame(SinglePackingListItem item1, SinglePackingListItem item2) {
+            return item1.equals(item2);
         }
     }
 }

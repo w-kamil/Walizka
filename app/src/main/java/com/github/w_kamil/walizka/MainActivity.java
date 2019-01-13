@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements OnListItemClickLi
             positiveButton.setOnClickListener(v -> {
                         if (listNameEditText.getText().length() == 0) {
                             Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
+                            //TODO validate list name is unique
                         } else {
                             dao.addNewPackingList(listNameEditText.getText().toString());
                             adapter.addPackingList(listNameEditText.getText().toString());
