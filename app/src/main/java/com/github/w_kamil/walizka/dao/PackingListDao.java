@@ -58,12 +58,12 @@ public class PackingListDao implements IPackingListDao {
     }
 
     @Override
-    public int updateIsItemPacked(SinglePackingListItem singlePackingListItem) {
+    public int updateIsItemPacked(int itemId, boolean isPacked) {
         database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(PackingListDbContract.PackingListEntry.COL_IS_ITEM_PACKED, singlePackingListItem.isPacked());
+        contentValues.put(PackingListDbContract.PackingListEntry.COL_IS_ITEM_PACKED, isPacked);
         int updatedRows = new DbContentProvider().update(PackingListDbContract.PackingListEntry.TABLE, contentValues,
-                PackingListDbContract.PackingListEntry._ID + " = ?", new String[]{String.valueOf(singlePackingListItem.getId())});
+                PackingListDbContract.PackingListEntry._ID + " = ?", new String[]{String.valueOf(itemId)});
         database.close();
         return updatedRows;
 
@@ -151,7 +151,7 @@ public class PackingListDao implements IPackingListDao {
     private class DbContentProvider {
 
 
-        protected Cursor query(String tableName, String[] columnNames, String selection, String[] selectionArgs) {
+        Cursor query(String tableName, String[] columnNames, String selection, String[] selectionArgs) {
             return database.query(tableName, columnNames, selection, selectionArgs, null, null, null);
         }
 

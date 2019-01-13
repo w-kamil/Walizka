@@ -26,7 +26,6 @@ import com.github.w_kamil.walizka.dao.Category;
 import com.github.w_kamil.walizka.dao.PackingListDao;
 import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,13 +37,11 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
-    PackingListDao dao;
-    String packingListName;
-    boolean optionalMenuViewFlag;
-    Menu menu;
-    private List<SinglePackingListItem> list;
+    private PackingListDao dao;
+    private String packingListName;
+    private boolean optionalMenuViewFlag; // TODO optionalMenuViewFlag is redundant with selectedListItem, to be removed
+    private Menu menu;
     private SinglePackingListItem selectedListItem;
-    private Integer selectedItemPosition;
     private PackingListAdapter adapter;
 
     @Override
@@ -116,7 +113,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
                         .setTitle(R.string.confirmation)
                         .setPositiveButton(R.string.confirm, (dialog, which) -> {
                             dao.removeItemFromList(selectedListItem);
-                            adapter.removeSinglePackingListItem(selectedItemPosition);
+                            adapter.removeSinglePackingListItem(selectedListItem);
                             clearMenu();
                         })
                         .setNegativeButton(R.string.cancel, null)
@@ -162,10 +159,11 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
             Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (list.stream().map(SinglePackingListItem::getItemName).anyMatch(enteredName::equals)) {
-            Toast.makeText(this, getResources().getString(R.string.item_already_exists), Toast.LENGTH_LONG).show();
-            return false;
-        }
+//        if (list.stream().map(SinglePackingListItem::getItemName).anyMatch(enteredName::equals)) {
+//            Toast.makeText(this, getResources().getString(R.string.item_already_exists), Toast.LENGTH_LONG).show();
+//            return false;
+//        }
+        // TODO change list item name validation logic not to work on local items list
         return true;
     }
 
@@ -180,31 +178,24 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
         menu.clear();
         getMenuInflater().inflate(R.menu.list_activity_menu, menu);
         optionalMenuViewFlag = false;
-        selectedItemPosition = null;
     }
 
     private void resetList() {
-        for (SinglePackingListItem listItem : list) {
-            listItem.setPacked(false);
-            dao.updateIsItemPacked(listItem);
-        }
+        //TODO create and call dao method setting all items in current list unpacked
     }
 
     @Override
-    public void onCheckBoxClick(View v, int position, boolean isChecked) {
+    public void onCheckBoxClick(SinglePackingListItem packingListItem, boolean isChecked) {
         if (optionalMenuViewFlag) {
-            updateMenu();
+            clearMenu();
         }
-        list.get(position).setPacked(isChecked);
-        dao.updateIsItemPacked(list.get(position));
-        updateUI();
+        dao.updateIsItemPacked(packingListItem.getId(), isChecked);
+        adapter.setItemPacked(packingListItem, isChecked);
     }
 
     @Override
-    public void setSelectecListItem(SinglePackingListItem singlePackingListItem, int position) {
-        singlePackingListItem.setSelected(true);
+    public void setSelectecListItem(SinglePackingListItem singlePackingListItem) {
         this.selectedListItem = singlePackingListItem;
-        this.selectedItemPosition = position;
     }
 
     @Override
@@ -218,7 +209,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
             @NonNull
             public View getView(int position, View convertView, ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
-                TextView textView = (TextView) v.findViewById(android.R.id.text1);
+                TextView textView = v.findViewById(android.R.id.text1);
                 textView.setText(categories[position].getCategoryName());
                 textView.setCompoundDrawablesWithIntrinsicBounds(categories[position].getDrawingResource(), 0, 0, 0);
                 int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
@@ -228,7 +219,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
         };
         AlertDialog chooseCategoryDialog = new AlertDialog.Builder(this)
                 .setAdapter(adapter, (dialog, which) -> {
-                    dao.updateItemCategory(list.get(position), categories[which]); // TODO fit data names in database
+//                    dao.updateItemCategory(list.get(position), categories[which]); //  TODO modify changincg category logis, not to work on local items list, fit data names in database
                     updateUI();
                 })
                 .setNegativeButton(R.string.cancel, null)
@@ -260,8 +251,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     }
 
     private void updateUI() {
-        list = dao.fetchAllItemsInList(packingListName);
-        Collections.sort(list, SinglePackingListItem.singlePackingListItemComparator);
+        List<SinglePackingListItem> list = dao.fetchAllItemsInList(packingListName);
         adapter = new PackingListAdapter(list);
         adapter.setPackingListItemsEventsListener(this);
         recyclerView.setAdapter(adapter);

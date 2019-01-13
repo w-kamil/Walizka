@@ -27,12 +27,12 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
 
     private boolean longClickSelectionFlag;
 
-    public PackingListAdapter(List<SinglePackingListItem> list) {
+    PackingListAdapter(List<SinglePackingListItem> list) {
         this.list = new SortedList<>(SinglePackingListItem.class, new CustomCallback(this));
         this.list.addAll(list);
     }
 
-    public void setPackingListItemsEventsListener(PackingListItemsEventsListener packingListItemsEventsListener) {
+    void setPackingListItemsEventsListener(PackingListItemsEventsListener packingListItemsEventsListener) {
         this.packingListItemsEventsListener = packingListItemsEventsListener;
     }
 
@@ -47,16 +47,23 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         list.add(new SinglePackingListItem(itemName, false, listName));
     }
 
-    void removeSinglePackingListItem(int position) {
-        list.removeItemAt(position);
+    void removeSinglePackingListItem(SinglePackingListItem item) {
+        list.remove(item);
+    }
+
+    void setItemPacked(SinglePackingListItem packingListItem, boolean isPacked) {
+        int position = list.indexOf(packingListItem);
+        packingListItem.setPacked(isPacked);
+        list.updateItemAt(position, packingListItem);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PackingListAdapter.MyViewHolder holder, int position) {
-        holder.name.setText(list.get(position).getItemName());
-        holder.itemImageView.setImageResource(list.get(position).getItemCategory().getDrawingResource());
-        holder.checkBox.setChecked(list.get(position).isPacked());
-        if (list.get(position).isSelected()) {
+        SinglePackingListItem singlePackingListItem = list.get(position);
+        holder.name.setText(singlePackingListItem.getItemName());
+        holder.itemImageView.setImageResource(singlePackingListItem.getItemCategory().getDrawingResource());
+        holder.checkBox.setChecked(singlePackingListItem.isPacked());
+        if (singlePackingListItem.isSelected()) {
             holder.singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(holder.singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
         } else if (holder.checkBox.isChecked()) {
             holder.singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(holder.singleItemLineraLayout.getContext(), R.color.colorPackedListItem));
@@ -70,41 +77,38 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         return list.size();
     }
 
-    public void setLongClickSelectionFlag(boolean longClickSelectionFlag) {
-        this.longClickSelectionFlag = longClickSelectionFlag;
-    }
-
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
         TextView name;
         CheckBox checkBox;
         ImageView itemImageView;
         LinearLayout singleItemLineraLayout;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name_text_view);
             checkBox = itemView.findViewById(R.id.checkbox);
             itemImageView = itemView.findViewById(R.id.item_image_view);
             singleItemLineraLayout = itemView.findViewById(R.id.single_item_linear_layout);
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                packingListItemsEventsListener.onCheckBoxClick(buttonView, getAdapterPosition(), isChecked);
+                if (buttonView.isPressed()) {
+                    packingListItemsEventsListener.onCheckBoxClick(list.get(MyViewHolder.this.getAdapterPosition()), isChecked);
+                }
+                //TODO how to disable checkboxes when some item is selected?
             });
             name.setOnLongClickListener(v -> {
                 if (!longClickSelectionFlag) {
                     list.get(getAdapterPosition()).setSelected(true);
                     singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
-                    packingListItemsEventsListener.setSelectecListItem(list.get(MyViewHolder.this.getAdapterPosition()), MyViewHolder.this.getAdapterPosition());
-                    setLongClickSelectionFlag(true);
+                    packingListItemsEventsListener.setSelectecListItem(list.get(getAdapterPosition()));
+                    longClickSelectionFlag = true;
                     packingListItemsEventsListener.chageMentuToOptional();
                     return true;
                 } else {
                     return false;
                 }
             });
-            itemImageView.setOnClickListener(v -> {
-                packingListItemsEventsListener.onCategoryImageClick(v, getAdapterPosition());
-            });
+            itemImageView.setOnClickListener(v -> packingListItemsEventsListener.onCategoryImageClick(v, getAdapterPosition()));
         }
     }
 

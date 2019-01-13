@@ -7,7 +7,7 @@ public interface IPackingListDao {
 
     List<SinglePackingListItem> fetchAllItemsInList(String packingListName);
     long addSingleListItem(SinglePackingListItem singlePackingListItem);
-    int updateIsItemPacked(SinglePackingListItem singlePackingListItem);
+    int updateIsItemPacked(int itemId, boolean isPacked);
     int updateItemCategory(SinglePackingListItem singlePackingListItem, Category newCategory);
     int renameListItem (SinglePackingListItem singlePackingListItem, String newName);
     int removeItemFromList(SinglePackingListItem singlePackingListItem);
