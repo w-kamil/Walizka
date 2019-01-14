@@ -24,12 +24,12 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
 
     private SortedList<SinglePackingListItem> list;
     private PackingListItemsEventsListener packingListItemsEventsListener;
-
-    private boolean longClickSelectionFlag;
+    private boolean clickable;
 
     PackingListAdapter(List<SinglePackingListItem> list) {
         this.list = new SortedList<>(SinglePackingListItem.class, new CustomCallback(this));
         this.list.addAll(list);
+        this.clickable = true;
     }
 
     void setPackingListItemsEventsListener(PackingListItemsEventsListener packingListItemsEventsListener) {
@@ -57,6 +57,16 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         list.updateItemAt(position, packingListItem);
     }
 
+    void setClickable(boolean clickable) {
+        this.clickable = clickable;
+        notifyDataSetChanged();
+    }
+
+    void clearItemSelection(SinglePackingListItem selectedItem) {
+        list.get(list.indexOf(selectedItem)).setSelected(false);
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull PackingListAdapter.MyViewHolder holder, int position) {
         SinglePackingListItem singlePackingListItem = list.get(position);
@@ -70,6 +80,10 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         } else {
             holder.singleItemLineraLayout.setBackgroundColor(Color.TRANSPARENT);
         }
+        holder.checkBox.setClickable(clickable);
+        holder.itemImageView.setClickable(clickable);
+        holder.name.setClickable(clickable);
+        holder.singleItemLineraLayout.setClickable(clickable);
     }
 
     @Override
@@ -94,15 +108,13 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
                 if (buttonView.isPressed()) {
                     packingListItemsEventsListener.onCheckBoxClick(list.get(MyViewHolder.this.getAdapterPosition()), isChecked);
                 }
-                //TODO how to disable checkboxes when some item is selected?
             });
             name.setOnLongClickListener(v -> {
-                if (!longClickSelectionFlag) {
+                if (clickable) {
                     list.get(getAdapterPosition()).setSelected(true);
                     singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
                     packingListItemsEventsListener.setSelectecListItem(list.get(getAdapterPosition()));
-                    longClickSelectionFlag = true;
-                    packingListItemsEventsListener.chageMentuToOptional();
+                    packingListItemsEventsListener.chageMenuToOptional();
                     return true;
                 } else {
                     return false;

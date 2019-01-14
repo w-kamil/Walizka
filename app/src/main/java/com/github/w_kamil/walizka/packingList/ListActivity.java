@@ -39,7 +39,6 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
 
     private PackingListDao dao;
     private String packingListName;
-    private boolean optionalMenuViewFlag; // TODO optionalMenuViewFlag is redundant with selectedListItem, to be removed
     private Menu menu;
     private SinglePackingListItem selectedListItem;
     private PackingListAdapter adapter;
@@ -67,7 +66,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.list_activity_menu, menu);
-        optionalMenuViewFlag = false;
+        selectedListItem = null;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -140,7 +139,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
                                 if (validateEnteredName(newNameEditText.getText().toString())) {
                                     dao.renameListItem(selectedListItem, newNameEditText.getText().toString());
                                     updateUI();
-                                    updateMenu();
+                                    clearMenu();
                                     renameListItemDialog.dismiss();
                                 }
                             }
@@ -168,16 +167,17 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     }
 
     @Override
-    public void chageMentuToOptional() {
+    public void chageMenuToOptional() {
         menu.clear();
         getMenuInflater().inflate(R.menu.optional_list_activity_menu, menu);
-        optionalMenuViewFlag = true;
+        adapter.setClickable(false);
     }
 
     private void clearMenu() {
         menu.clear();
+        selectedListItem = null;
         getMenuInflater().inflate(R.menu.list_activity_menu, menu);
-        optionalMenuViewFlag = false;
+        adapter.setClickable(true);
     }
 
     private void resetList() {
@@ -186,7 +186,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
 
     @Override
     public void onCheckBoxClick(SinglePackingListItem packingListItem, boolean isChecked) {
-        if (optionalMenuViewFlag) {
+        if (selectedListItem != null) {
             clearMenu();
         }
         dao.updateIsItemPacked(packingListItem.getId(), isChecked);
@@ -207,7 +207,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
                 android.R.id.text1,
                 categories) {
             @NonNull
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View v = super.getView(position, convertView, parent);
                 TextView textView = v.findViewById(android.R.id.text1);
                 textView.setText(categories[position].getCategoryName());
@@ -228,23 +228,10 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     }
 
     @Override
-    public boolean updateMenu() {
-        menu.clear();
-        if (!optionalMenuViewFlag) {
-            getMenuInflater().inflate(R.menu.optional_list_activity_menu, menu);
-            optionalMenuViewFlag = true;
-        } else {
-            getMenuInflater().inflate(R.menu.list_activity_menu, menu);
-            optionalMenuViewFlag = false;
-        }
-        return false;
-    }
-
-    @Override
     public void onBackPressed() {
-        if (optionalMenuViewFlag) {
-            updateMenu();
-            updateUI();
+        if (selectedListItem != null) {
+            clearMenu();
+            adapter.clearItemSelection(selectedListItem);
         } else {
             super.onBackPressed();
         }

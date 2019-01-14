@@ -8,9 +8,7 @@ import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 public interface PackingListItemsEventsListener {
     void setSelectecListItem(SinglePackingListItem singlePackingListItem);
 
-    boolean updateMenu();
-
-    void chageMentuToOptional();
+    void chageMenuToOptional();
 
     void onCategoryImageClick(View v, int position);
 
