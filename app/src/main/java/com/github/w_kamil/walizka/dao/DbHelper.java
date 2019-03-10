@@ -21,7 +21,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 + PackingListDbContract.PackingListEntry.COL_ITEM_NAME + " TEXT NOT NULL UNIQUE, "
                 + PackingListDbContract.PackingListEntry.COL_IS_ITEM_PACKED + " INTEGER DEFAULT 0, "
                 + PackingListDbContract.PackingListEntry.COL_LIST_NAME + " TEXT NOT NULL, "
-                + PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY + " TEXT DEFAULT 'OTHER', " // TODO check if saved category data is correct
+                + PackingListDbContract.PackingListEntry.COL_ITEM_CATEGORY + " TEXT DEFAULT 'OTHER', "
                 + "FOREIGN KEY (" + PackingListDbContract.PackingListEntry.COL_LIST_NAME + ") REFERENCES "
                 + PackingListDbContract.ListOfLists.TABLE + " (" + PackingListDbContract.ListOfLists.COL_LIST_NAME + "));";
 
