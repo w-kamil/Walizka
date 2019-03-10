@@ -200,7 +200,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
 
     @Override
     public void onCategoryImageClick(View v, int position) {
-        Category[] categories = new Categories().getCategories();
+        Category[] categories = Category.values();
         ListAdapter adapter = new ArrayAdapter<Category>(
                 this,
                 android.R.layout.select_dialog_item,
