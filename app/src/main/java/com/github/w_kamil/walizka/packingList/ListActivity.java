@@ -186,7 +186,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     }
 
     private void resetList() {
-        //TODO create and call dao method setting all items in current list unpacked
+        dao.setAllItemsInListUnpacked(packingListName);
     }
 
     @Override

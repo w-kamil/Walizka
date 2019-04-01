@@ -70,6 +70,16 @@ public class PackingListDao implements IPackingListDao {
     }
 
     @Override
+    public void setAllItemsInListUnpacked(String packingListName) {
+        database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PackingListDbContract.PackingListEntry.COL_IS_ITEM_PACKED, false);
+        new DbContentProvider().update(PackingListDbContract.PackingListEntry.TABLE, contentValues,
+                null, null);
+        database.close();
+    }
+
+    @Override
     public int updateItemCategory(SinglePackingListItem singlePackingListItem, Category newCategory) {
         database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
