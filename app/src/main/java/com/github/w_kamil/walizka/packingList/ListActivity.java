@@ -230,8 +230,8 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     @Override
     public void onBackPressed() {
         if (selectedListItem != null) {
-            clearMenu();
             adapter.clearItemSelection(selectedListItem);
+            clearMenu();
         } else {
             super.onBackPressed();
         }
