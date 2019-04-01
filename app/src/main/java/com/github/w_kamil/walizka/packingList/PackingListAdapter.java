@@ -114,7 +114,7 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
                     list.get(getAdapterPosition()).setSelected(true);
                     singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
                     packingListItemsEventsListener.setSelectecListItem(list.get(getAdapterPosition()));
-                    packingListItemsEventsListener.chageMenuToOptional();
+                    packingListItemsEventsListener.changeMenuToOptional();
                     return true;
                 } else {
                     return false;

@@ -158,16 +158,21 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
             Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
             return false;
         }
-//        if (list.stream().map(SinglePackingListItem::getItemName).anyMatch(enteredName::equals)) {
-//            Toast.makeText(this, getResources().getString(R.string.item_already_exists), Toast.LENGTH_LONG).show();
-//            return false;
-//        }
-        // TODO change list item name validation logic not to work on local items list
+        if (itemNameAlreadyExistsInPackingList(enteredName)) {
+            Toast.makeText(this, getResources().getString(R.string.item_already_exists), Toast.LENGTH_LONG).show();
+            return false;
+        }
         return true;
     }
 
+    private boolean itemNameAlreadyExistsInPackingList(String itemName) {
+        return dao.fetchAllItemsInList(packingListName).stream()
+                .map(SinglePackingListItem::getItemName)
+                .anyMatch(itemName::equals);
+    }
+
     @Override
-    public void chageMenuToOptional() {
+    public void changeMenuToOptional() {
         menu.clear();
         getMenuInflater().inflate(R.menu.optional_list_activity_menu, menu);
         adapter.setClickable(false);
