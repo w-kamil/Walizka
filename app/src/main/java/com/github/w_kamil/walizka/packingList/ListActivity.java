@@ -224,7 +224,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
         };
         AlertDialog chooseCategoryDialog = new AlertDialog.Builder(this)
                 .setAdapter(adapter, (dialog, which) -> {
-                    dao.updateItemCategory(selectedListItem, categories[which]); //  TODO modify changincg category logis, not to work on local items list, fit data names in database
+                    dao.updateItemCategory(selectedListItem, categories[which]);
                     updateUI();
                 })
                 .setNegativeButton(R.string.cancel, null)
