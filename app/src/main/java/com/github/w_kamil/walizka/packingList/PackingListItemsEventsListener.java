@@ -1,7 +1,5 @@
 package com.github.w_kamil.walizka.packingList;
 
-import android.view.View;
-
 import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 
 
@@ -10,7 +8,7 @@ public interface PackingListItemsEventsListener {
 
     void changeMenuToOptional();
 
-    void onCategoryImageClick(View v, int position);
+    void onCategoryImageClick(SinglePackingListItem singlePackingListItem);
 
     void onCheckBoxClick(SinglePackingListItem packingListItem, boolean isChecked);
 }

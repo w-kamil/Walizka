@@ -204,7 +204,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     }
 
     @Override
-    public void onCategoryImageClick(View v, int position) {
+    public void onCategoryImageClick(SinglePackingListItem selectedListItem) {
         Category[] categories = Category.values();
         ListAdapter adapter = new ArrayAdapter<Category>(
                 this,
@@ -224,7 +224,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
         };
         AlertDialog chooseCategoryDialog = new AlertDialog.Builder(this)
                 .setAdapter(adapter, (dialog, which) -> {
-//                    dao.updateItemCategory(list.get(position), categories[which]); //  TODO modify changincg category logis, not to work on local items list, fit data names in database
+                    dao.updateItemCategory(selectedListItem, categories[which]); //  TODO modify changincg category logis, not to work on local items list, fit data names in database
                     updateUI();
                 })
                 .setNegativeButton(R.string.cancel, null)
