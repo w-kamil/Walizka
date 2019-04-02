@@ -23,6 +23,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static java.util.Objects.isNull;
+
 public class MainActivity extends AppCompatActivity implements OnListItemClickListener {
 
     @BindView(R.id.recycler_view)
@@ -58,13 +60,10 @@ public class MainActivity extends AppCompatActivity implements OnListItemClickLi
                 .create();
         addNewListDialog.setOnShowListener(dialog -> {
             Button positiveButton = addNewListDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            final EditText listNameEditText = (EditText) dialogLayout.findViewById(R.id.name_edit_text);
+            final EditText listNameEditText = dialogLayout.findViewById(R.id.name_edit_text);
 
             positiveButton.setOnClickListener(v -> {
-                        if (listNameEditText.getText().length() == 0) {
-                            Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
-                            //TODO validate list name is unique
-                        } else {
+                        if (nameIsValid(listNameEditText.getText().toString())) {
                             dao.addNewPackingList(listNameEditText.getText().toString());
                             adapter.addPackingList(listNameEditText.getText().toString());
                             addNewListDialog.dismiss();
@@ -110,16 +109,32 @@ public class MainActivity extends AppCompatActivity implements OnListItemClickLi
             Button positiveButton = renameListDialog.getButton(AlertDialog.BUTTON_POSITIVE);
             EditText newListNameEditText = renameListDialog.findViewById(R.id.new_name_edit_text);
             positiveButton.setOnClickListener(v1 -> {
-                if (newListNameEditText.getText().length() == 0) {
-                    Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
-                } else {
+                if (nameIsValid(newListNameEditText.getText().toString())) {
                     dao.renameList(listName, newListNameEditText.getText().toString());
-                    adapter.renamePackingList(position, newListNameEditText.getText().toString()); // TODO handle duplicated namse exception
+                    adapter.renamePackingList(position, newListNameEditText.getText().toString());
                     renameListDialog.dismiss();
                 }
             });
         });
         renameListDialog.show();
+    }
+
+    private boolean nameIsValid(String name) {
+        if (isNull(name) || name.isEmpty()) {
+            Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (listNameAlreadyExists(name)) {
+            Toast.makeText(this, getResources().getString(R.string.name_already_exists), Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean listNameAlreadyExists(String name) {
+        return dao.fetchAllLists().stream()
+                .map(PackingList::getListName)
+                .anyMatch(name::equals);
     }
 
     private void updateUI() {
