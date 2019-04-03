@@ -31,6 +31,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static java.util.Objects.isNull;
+
 public class ListActivity extends AppCompatActivity implements PackingListItemsEventsListener {
 
     public static final String PACKING_LIST = "packingListName";
@@ -85,7 +87,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
                     Button positiveButton = addNewListItemDialog.getButton(AlertDialog.BUTTON_POSITIVE);
                     final EditText listItemNameEditText = dialogLayout.findViewById(R.id.item_name_edit_text);
                     positiveButton.setOnClickListener(v -> {
-                                if (validateEnteredName(listItemNameEditText.getText().toString())) {
+                                if (itemNameIsValid(listItemNameEditText.getText().toString())) {
                                     SinglePackingListItem singlePackingListItem = new SinglePackingListItem(listItemNameEditText.getText().toString(), false, packingListName);
                                     dao.addSingleListItem(singlePackingListItem);
                                     adapter.addSinglePakingListItem(singlePackingListItem.getItemName(), singlePackingListItem.getListName());
@@ -132,11 +134,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
                     final EditText newNameEditText = renameDialogLayout.findViewById(R.id.new_name_edit_text);
                     newNameEditText.setText(selectedListItem.getItemName());
                     positiveButton.setOnClickListener(v -> {
-                                if (newNameEditText.getText().toString().equals(selectedListItem.getItemName())) {
-                                    Toast.makeText(this, getResources().getString(R.string.enter_new_name), Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-                                if (validateEnteredName(newNameEditText.getText().toString())) {
+                                if (itemNameIsValid(newNameEditText.getText().toString(), selectedListItem.getItemName())) {
                                     dao.renameListItem(selectedListItem, newNameEditText.getText().toString());
                                     updateUI();
                                     clearMenu();
@@ -153,9 +151,17 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
 
     }
 
-    private boolean validateEnteredName(final String enteredName) {
-        if (enteredName.length() == 0) {
+    private boolean itemNameIsValid(String itemName) {
+        return itemNameIsValid(itemName, null);
+    }
+
+    private boolean itemNameIsValid(String enteredName, String oldName) {
+        if (isNull(enteredName) || enteredName.isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.enter_name), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (enteredName.equals(oldName)) {
+            Toast.makeText(this, getResources().getString(R.string.enter_new_name), Toast.LENGTH_SHORT).show();
             return false;
         }
         if (itemNameAlreadyExistsInPackingList(enteredName)) {
