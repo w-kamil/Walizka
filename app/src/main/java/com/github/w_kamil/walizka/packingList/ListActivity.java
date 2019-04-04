@@ -90,7 +90,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
                                 if (itemNameIsValid(listItemNameEditText.getText().toString())) {
                                     SinglePackingListItem singlePackingListItem = new SinglePackingListItem(listItemNameEditText.getText().toString(), false, packingListName);
                                     dao.addSingleListItem(singlePackingListItem);
-                                    adapter.addSinglePakingListItem(singlePackingListItem.getItemName(), singlePackingListItem.getListName());
+                                    listAdapter.addSinglePakingListItem(singlePackingListItem.getItemName(), singlePackingListItem.getListName());
                                     addNewListItemDialog.dismiss();
                                 }
                             }
@@ -114,7 +114,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
                         .setTitle(R.string.confirmation)
                         .setPositiveButton(R.string.confirm, (dialog, which) -> {
                             dao.removeItemFromList(selectedListItem);
-                            adapter.removeSinglePackingListItem(selectedListItem);
+                            listAdapter.removeSinglePackingListItem(selectedListItem);
                             clearMenu();
                         })
                         .setNegativeButton(R.string.cancel, null)
@@ -181,14 +181,14 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     public void changeMenuToOptional() {
         menu.clear();
         getMenuInflater().inflate(R.menu.optional_list_activity_menu, menu);
-        adapter.setClickable(false);
+        listAdapter.setClickable(false);
     }
 
     private void clearMenu() {
         menu.clear();
         selectedListItem = null;
         getMenuInflater().inflate(R.menu.list_activity_menu, menu);
-        adapter.setClickable(true);
+        listAdapter.setClickable(true);
     }
 
     private void resetList() {
@@ -201,7 +201,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
             clearMenu();
         }
         dao.updateIsItemPacked(packingListItem.getId(), isChecked);
-        adapter.setItemPacked(packingListItem, isChecked);
+        listAdapter.setItemPacked(packingListItem, isChecked);
     }
 
     @Override
@@ -212,7 +212,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     @Override
     public void onCategoryImageClick(SinglePackingListItem selectedListItem) {
         Category[] categories = Category.values();
-        ListAdapter adapter = new ArrayAdapter<Category>(
+        ListAdapter categoriesAdapter = new ArrayAdapter<Category>(
                 this,
                 android.R.layout.select_dialog_item,
                 android.R.id.text1,
@@ -229,9 +229,9 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
             }
         };
         AlertDialog chooseCategoryDialog = new AlertDialog.Builder(this)
-                .setAdapter(adapter, (dialog, which) -> {
+                .setAdapter(categoriesAdapter, (dialog, which) -> {
                     dao.updateItemCategory(selectedListItem, categories[which]);
-                    updateUI();
+                    listAdapter.setItemCategory(selectedListItem, categories[which]);
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .create();
@@ -241,7 +241,7 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
     @Override
     public void onBackPressed() {
         if (selectedListItem != null) {
-            adapter.clearItemSelection(selectedListItem);
+            listAdapter.clearItemSelection(selectedListItem);
             clearMenu();
         } else {
             super.onBackPressed();
@@ -250,8 +250,8 @@ public class ListActivity extends AppCompatActivity implements PackingListItemsE
 
     private void updateUI() {
         List<SinglePackingListItem> list = dao.fetchAllItemsInList(packingListName);
-        adapter = new PackingListAdapter(list);
-        adapter.setPackingListItemsEventsListener(this);
-        recyclerView.setAdapter(adapter);
+        listAdapter = new PackingListAdapter(list);
+        listAdapter.setPackingListItemsEventsListener(this);
+        recyclerView.setAdapter(listAdapter);
     }
 }

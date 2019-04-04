@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.w_kamil.walizka.R;
+import com.github.w_kamil.walizka.dao.Category;
 import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 
 import java.util.List;
@@ -54,6 +55,12 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
     void setItemPacked(SinglePackingListItem packingListItem, boolean isPacked) {
         int position = list.indexOf(packingListItem);
         packingListItem.setPacked(isPacked);
+        list.updateItemAt(position, packingListItem);
+    }
+
+    void setItemCategory(SinglePackingListItem packingListItem, Category category){
+        int position = list.indexOf(packingListItem);
+        packingListItem.setItemCategory(category);
         list.updateItemAt(position, packingListItem);
     }
 

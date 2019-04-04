@@ -78,6 +78,10 @@ public class SinglePackingListItem implements Comparable<SinglePackingListItem>,
         return itemCategory;
     }
 
+    public void setItemCategory(Category itemCategory) {
+        this.itemCategory = itemCategory;
+    }
+
     public boolean isSelected() {
         return isSelected;
     }
