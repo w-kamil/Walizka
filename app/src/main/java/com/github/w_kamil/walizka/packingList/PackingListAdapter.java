@@ -58,7 +58,7 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
         list.updateItemAt(position, packingListItem);
     }
 
-    void setItemCategory(SinglePackingListItem packingListItem, Category category){
+    void setItemCategory(SinglePackingListItem packingListItem, Category category) {
         int position = list.indexOf(packingListItem);
         packingListItem.setItemCategory(category);
         list.updateItemAt(position, packingListItem);
@@ -112,16 +112,15 @@ public class PackingListAdapter extends RecyclerView.Adapter<PackingListAdapter.
             itemImageView = itemView.findViewById(R.id.item_image_view);
             singleItemLineraLayout = itemView.findViewById(R.id.single_item_linear_layout);
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (buttonView.isPressed()) {
-                    packingListItemsEventsListener.onCheckBoxClick(list.get(MyViewHolder.this.getAdapterPosition()), isChecked);
+                if (clickable && buttonView.isPressed()) {
+                    packingListItemsEventsListener.onCheckBoxClick(list.get(getAdapterPosition()), isChecked);
                 }
             });
             name.setOnLongClickListener(v -> {
                 if (clickable) {
                     list.get(getAdapterPosition()).setSelected(true);
+                    packingListItemsEventsListener.setItemSelection(list.get(getAdapterPosition()));
                     singleItemLineraLayout.setBackgroundColor(ContextCompat.getColor(singleItemLineraLayout.getContext(), R.color.colorListItemLongClickSelected));
-                    packingListItemsEventsListener.setSelectecListItem(list.get(getAdapterPosition()));
-                    packingListItemsEventsListener.changeMenuToOptional();
                     return true;
                 } else {
                     return false;

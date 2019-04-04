@@ -4,11 +4,10 @@ import com.github.w_kamil.walizka.dao.SinglePackingListItem;
 
 
 public interface PackingListItemsEventsListener {
-    void setSelectecListItem(SinglePackingListItem singlePackingListItem);
-
-    void changeMenuToOptional();
 
     void onCategoryImageClick(SinglePackingListItem singlePackingListItem);
 
     void onCheckBoxClick(SinglePackingListItem packingListItem, boolean isChecked);
+
+    void setItemSelection(SinglePackingListItem singlePackingListItem);
 }
